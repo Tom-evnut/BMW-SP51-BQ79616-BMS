@@ -126,6 +126,19 @@ base device. `bq_uart.py` now does this automatically (`init_single()`): DLL-syn
 This agrees with the bench supply to within a few mV, so the ~30 Ω in series with BAT carries negligible current. The
 BCP56 collector probably takes its current before that resistor.
 
+### Faults
+
+`python bq_uart.py COM12 faults --clear` reads 0x052D–0x0554, writes `FAULT_RST1/2` (0x0331/0x0332) = 0xFF/0x7F, then
+reads again.
+
+| Register | Before | Bits | Cause |
+|---|---|---|---|
+| FAULT_SUMMARY | 0x12 | COMM, SYS | Summary of the two below |
+| FAULT_COMM1 | 0x10 | UART_TR: fault while transmitting a response | Our bench experiments (miswired TX/RX, no reads before auto-address) |
+| FAULT_SYS | 0x10 | DRST: a digital reset has occurred | The HW_RESET ping we sent, and/or the brown-out when the supply current-limited |
+
+**After clear: no faults.** The chip is healthy.
+
 ### Main ADC, no HV connected, no current
 
 VCn node voltages relative to A10. VCELL10 saturates (+6.25 V limit), so the upper nodes are referenced to VC11 = 5.00 V

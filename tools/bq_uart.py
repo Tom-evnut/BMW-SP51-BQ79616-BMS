@@ -13,6 +13,7 @@ Examples:
     python bq_uart.py COM5 info            # wake, read PARTID/REV/address/OTP config
     python bq_uart.py COM5 cells           # wake, start main ADC, read VCELL1..16
     python bq_uart.py COM5 bat             # wake, start AUX ADC, read BAT pin voltage
+    python bq_uart.py COM5 faults --clear  # read all fault registers, clear, read again
     python bq_uart.py COM5 read 0x0500 1   # read 1 byte from PARTID
     python bq_uart.py COM5 write 0x030D 0x06
 
@@ -42,6 +43,7 @@ REG = {
     "CONTROL1": 0x0309,
     "ADC_CTRL1": 0x030D,
     "ADC_CTRL3": 0x030F,
+    "FAULT_RST1": 0x0331,
     "PARTID": 0x0500,
     "DEV_STAT": 0x052C,
     "FAULT_SUMMARY": 0x052D,
@@ -192,6 +194,48 @@ def cmd_cells(bq: BQ):
         print(row)
 
 
+FAULT_REGS = {
+    0x052D: "FAULT_SUMMARY", 0x0530: "FAULT_COMM1", 0x0531: "FAULT_COMM2", 0x0532: "FAULT_COMM3",
+    0x0535: "FAULT_OTP", 0x0536: "FAULT_SYS", 0x053A: "FAULT_PROT1", 0x053B: "FAULT_PROT2",
+    0x053C: "FAULT_OV1", 0x053D: "FAULT_OV2", 0x053E: "FAULT_UV1", 0x053F: "FAULT_UV2",
+    0x0540: "FAULT_OT", 0x0541: "FAULT_UT", 0x0543: "FAULT_COMP_GPIO",
+    0x0545: "FAULT_COMP_VCCB1", 0x0546: "FAULT_COMP_VCCB2", 0x0548: "FAULT_COMP_VCOW1",
+    0x0549: "FAULT_COMP_VCOW2", 0x054B: "FAULT_COMP_CBOW1", 0x054C: "FAULT_COMP_CBOW2",
+    0x054E: "FAULT_COMP_CBFET1", 0x054F: "FAULT_COMP_CBFET2", 0x0550: "FAULT_COMP_MISC",
+    0x0552: "FAULT_PWR1", 0x0553: "FAULT_PWR2", 0x0554: "FAULT_PWR3",
+}
+
+
+# Bit names (bit 7 first), from datasheet SLUSE81F section 7.5.4.13
+FAULT_BITS = {
+    0x052D: ["PROT", "COMP_ADC", "OTP", "COMM", "OTUT", "OVUV", "SYS", "PWR"],
+    0x0530: ["RSVD", "RSVD", "RSVD", "UART_TR", "UART_RR", "UART_RC", "COMMCLR_DET", "STOP_DET"],
+    0x0536: ["LFO", "RSVD", "GPIO", "DRST", "CTL", "CTS", "TSHUT", "TWARN"],
+}
+
+
+def read_faults(bq: BQ) -> dict:
+    block = bq.read(0x052D, 0x0554 - 0x052D + 1)
+    return {addr: block[addr - 0x052D] for addr in FAULT_REGS}
+
+
+def print_faults(faults: dict, title: str):
+    active = {a: v for a, v in faults.items() if v}
+    print(f"{title}: " + ("no faults" if not active else ""))
+    for addr, val in active.items():
+        names = FAULT_BITS.get(addr)
+        bits = ", ".join(names[7 - b] for b in range(7, -1, -1) if val >> b & 1) if names else ""
+        print(f"  {FAULT_REGS[addr]:<18} 0x{addr:04X} = 0x{val:02X}  ({val:08b})  {bits}")
+
+
+def cmd_faults(bq: BQ, clear: bool):
+    print_faults(read_faults(bq), "Before" if clear else "Faults")
+    if clear:
+        bq.write(REG["FAULT_RST1"], bytes([0xFF, 0x7F]))  # FAULT_RST1 = all, FAULT_RST2 = all (bit 7 reserved)
+        time.sleep(0.05)
+        print_faults(read_faults(bq), "After clear")
+
+
 def cmd_bat(bq: BQ):
     bq.write(REG["ADC_CTRL3"], bytes([0x06]))  # AUX_GO | AUX_MODE = continuous
     time.sleep(0.1)
@@ -202,9 +246,10 @@ def cmd_bat(bq: BQ):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("port")
-    ap.add_argument("cmd", choices=["info", "cells", "bat", "read", "write", "wake"])
+    ap.add_argument("cmd", choices=["info", "cells", "bat", "faults", "read", "write", "wake"])
     ap.add_argument("args", nargs="*")
     ap.add_argument("--no-wake", action="store_true", help="skip the WAKE ping and auto-address")
+    ap.add_argument("--clear", action="store_true", help="faults: clear all latched faults")
     ap.add_argument("-v", "--verbose", action="store_true", help="print raw frames")
     a = ap.parse_args()
 
@@ -218,6 +263,8 @@ def main():
         cmd_cells(bq)
     elif a.cmd == "bat":
         cmd_bat(bq)
+    elif a.cmd == "faults":
+        cmd_faults(bq, a.clear)
     elif a.cmd == "read":
         reg, length = int(a.args[0], 0), int(a.args[1], 0) if len(a.args) > 1 else 1
         print(hexs(bq.read(reg, length)))
