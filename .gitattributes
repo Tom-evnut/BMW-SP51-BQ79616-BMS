@@ -1,0 +1,3 @@
+*.pdf binary
+*.sal binary
+*.sh text eol=lf
