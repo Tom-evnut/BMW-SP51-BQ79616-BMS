@@ -194,7 +194,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | B7 | Yes | LV / host | Host UART RX (← BQ79616 TX) | ISO7721 pin 6 (OUTB) | Idle high | Confirmed. Sniff channel: BMS chain → host |
 | B8 | Yes | | | | | |
 | B9 | No | — | | | | Unpopulated (confirmed) |
-| B10 | Yes | **Isolated / BQ side** | Isolated-domain supply input (4–40 V?) | TPS7A6650-Q1 (rear), pin to confirm (expect pin 1 VIN) | Unpowered: **1.2 kΩ to A10, same both polarities** | Confirmed to reach the LDO; which pin is still to confirm. Also check for a feed to BQ79616 BAT (pin 1) |
+| B10 | Yes | **Isolated / BQ side** | **Isolated-domain supply input** (return = A10) | TPS7A6650-Q1 pin 1 (VIN) **and** pin 2 (EN), directly (confirmed) | Unpowered: **1.2 kΩ to A10, same both polarities** | EN tied to VIN, so the LDO runs whenever B10 is powered. Check for a feed to BQ79616 BAT (pin 1). Measure the voltage powered (DMM only) |
 
 ## Findings log
 
@@ -203,6 +203,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | BQ79616 found on daughter board, used as base device |
 | | ISO7721-Q1 (`7721Q`) found next to the header |
 | | Header is 20-way with 4 pins missing, which is likely an isolation (creepage) gap |
+| | B10 goes directly to TPS7A6650-Q1 pins 1 (VIN) and 2 (EN): B10/A10 is the isolated domain's power input from the SME main board |
 | | B10 to A10 = 1.2 kΩ unpowered, the same in both polarities (resistive path; diodes may not conduct at the meter's test voltage) |
 | | B10 connects to the rear-side TI `46 PA1Q` = TPS7A6650-Q1 5 V LDO: B10 is the isolated domain's supply input |
 | | A10 = ISO7721 pin 4 (GND1): the isolated BQ-side ground is on the header, behind the column-9 gap |
