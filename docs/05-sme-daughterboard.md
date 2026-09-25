@@ -149,7 +149,7 @@ Fill this in with the board unpowered, using resistance mode (series resistors w
 | 4 | GND1 | BQ | — | | | BQ-side ground. Use for the isolation check |
 | 5 | GND2 | Header | **A6** | | | Header-side GND (confirmed) |
 | 6 | OUTB | Header | | | | **Host RX** ← BQ TX |
-| 7 | INA | Header | | | | **Host TX** → BQ RX |
+| 7 | INA | Header | **A7** | | | **Host TX** → BQ RX (confirmed) |
 | 8 | VCC2 | Header | | | | Host logic supply |
 
 Isolation check: resistance from the BQ-side GND to every header pin should read open (> 10 MΩ). Header pins A1/B1
@@ -179,7 +179,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | A4 | Yes |  |  |  | | |
 | A5 | Yes |  |  |  | | |
 | A6 | Yes | LV / host | GND (host side) | ISO7721 pin 5 (GND2) | 0 V | Confirmed |
-| A7 | Yes |  |  |  | | |
+| A7 | Yes | LV / host | Host UART TX (→ BQ79616 RX) | ISO7721 pin 7 (INA) | Idle high | Confirmed. Sniff channel: host → BMS chain |
 | A8 | Yes |  |  |  | | |
 | A9 | No | — | | | | Unpopulated (confirmed) |
 | A10 | Yes | | | Transformer? (possible ring return, to check) | | Isolated from columns 3–8 by empty column 9 |
@@ -201,6 +201,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | BQ79616 found on daughter board, used as base device |
 | | ISO7721-Q1 (`7721Q`) found next to the header |
 | | Header is 20-way with 4 pins missing, which is likely an isolation (creepage) gap |
+| | A7 = ISO7721 pin 7 (INA): host TX |
 | | A6 = ISO7721 pin 5 (GND2): the header faces ISO7721 side 2 (pins 5–8) |
 | | A2, B2, A9, B9 unpopulated: columns 2 and 9 are empty, so columns 1 and 10 are separated from the middle |
 | | A1 + B1 (left column) go through isolation transformers: this is the daisy-chain pair to the modules |
