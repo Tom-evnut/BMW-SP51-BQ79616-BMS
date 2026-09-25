@@ -18,7 +18,7 @@ The BMW SME carries a daughter board with:
 | `BYG23M` | SMA | Vishay BYG23M, ~1 kV-class rectifier | Medium (check rating) | HV network |
 | `3303` | 1206 resistors | 330 kΩ | High | HV divider / insulation-measurement resistor strings |
 | ST logo, DPAK (several, some under grey silicone) | DPAK | ST, unidentified | — | Likely HV MOSFETs switching the measurement network |
-| onsemi `RXB BH-16`(?) | SOT-223 | Unidentified | — | Probably a regulator |
+| onsemi `RXB BH-16` | SOT-223 | onsemi **BCP56-16** NPN, 80 V, 1 A, hFE 100–250 (`BH-16` = BCP56-16T1G/T3G marking) | High | BQ79616 external NPN pre-regulator (BAT → LDOIN). It's the transistor closest to the HEF4021 (confirmed in use) |
 | Würth `20059 V1` | SMD magnetic | Würth, unidentified | — | Transformer or choke |
 | `GF 820 EZR` (×3, rear) | Radial can | ~820 µF capacitor | Medium | Bulk capacitance for a switching supply |
 | Beige 2-way connector | — | — | — | Unknown. The chain goes out through the header instead, so this may be shunt sense or a sensor |
@@ -188,7 +188,7 @@ Pin numbering confirmed as standard: anticlockwise from the dot, pin 1 = BAT. Ch
 Expect BMW to disable the undervoltage comparators on these channels (`UV_DISABLE1/2`, 0x000C–0x000D); look for those writes in the captures.
 
 Still to record: what each remaining VC and CB pin connects to (5 V rail, A10, INA240 output, HV divider, a
-resistor/capacitor filter), and the BQ79616's external NPN pre-regulator (BAT → collector, NPNB pin 48 → base, LDOIN pin 47 → emitter). The onsemi SOT-223 next to the BQ79616 is a candidate.
+resistor/capacitor filter), and the BQ79616's external NPN pre-regulator (BAT → collector, NPNB pin 48 → base, LDOIN pin 47 → emitter). This is the onsemi BCP56-16 (SOT-223) closest to the HEF4021B (confirmed).
 
 BAT (pin 1) is fed from header **B10 through about 30 Ω** (confirmed).
 
@@ -238,6 +238,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | BQ79616 found on daughter board, used as base device |
 | | ISO7721-Q1 (`7721Q`) found next to the header |
 | | Header is 20-way with 4 pins missing, which is likely an isolation (creepage) gap |
+| | The BQ79616's NPN pre-regulator is the SOT-223 next to the HEF4021B, marked `BH-16` = onsemi BCP56-16 |
 | | BQ79616 BAT (pin 1) reads about 30 Ω to B10: the isolated supply powers the BQ79616 directly, so it must be 9–40 V (probably about 12 V) |
 | | CB1–CB8 (even pins 18–32) are tied directly to A10 / GND, as is CB0 |
 | | Standard BQ79616 pin numbering confirmed (pins 46 CVSS and 34 CB0 = A10). VC14 (pin 7) and VC11 (pin 13) are tied to the 5 V rail (0 Ω) |
