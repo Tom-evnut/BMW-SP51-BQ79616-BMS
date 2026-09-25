@@ -64,18 +64,52 @@ The BMW SME carries a daughter board with:
 
 ## Header pinout worksheet
 
-Fill this in as it's traced.
+The header is **20-way with 4 pins missing** (16 populated). Missing pins in a header like this usually form a
+**creepage/clearance gap** between two isolation domains. Expect the populated pins to split into:
 
-| Header pin | Net | Connects to | Voltage (powered) | Notes |
-|---|---|---|---|---|
-| 1 | | | | |
-| 2 | | | | |
-| 3 | | | | |
-| 4 | | | | |
-| 5 | | | | |
-| 6 | | | | |
-| 7 | | | | |
-| 8 | | | | |
+- **LV / host side:** host logic supply, GND, host UART TX/RX, and possibly 12 V, wake and NFAULT.
+- **BQ side (treat as HV until proven otherwise):** daisy-chain COMH/COML pairs (the chain connector may sit on the
+  SME main board), BQ79616 BAT supply, and possibly bus-bar or voltage sense.
+
+Layout, pitch and the positions of the missing pins: _to record_ (for example 2 × 10 at 2.54 mm; odd pins on one row,
+even pins on the other).
+
+### Procedure (unpowered, daughter board removed if possible)
+
+1. Mark pin 1 and the numbering scheme. Record which 4 positions are missing.
+2. For each populated pin, beep it against:
+   - ISO7721 GND1 and GND2, VCC1 and VCC2, INA, INB, OUTA and OUTB.
+   - BQ79616 pin 1 (BAT), 39 (AVSS), 40–43 (COMLP/COMLN/COMHN/COMHP), 62 (NFAULT) and 63/64 (BBN/BBP).
+3. Anything that connects to the BQ side without passing through the ISO7721 is **BQ-side/HV-domain**. Check whether
+   those pins sit together on the far side of the missing-pin gap.
+4. For COM lines, note what sits between the BQ79616 pins and the header: capacitors, chokes or transformers.
+
+### Worksheet
+
+Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin missing.
+
+| Pin | Populated | Domain | Net | Connects to | Voltage (powered) | Notes |
+|---|---|---|---|---|---|---|
+| 1 | | | | | | |
+| 2 | | | | | | |
+| 3 | | | | | | |
+| 4 | | | | | | |
+| 5 | | | | | | |
+| 6 | | | | | | |
+| 7 | | | | | | |
+| 8 | | | | | | |
+| 9 | | | | | | |
+| 10 | | | | | | |
+| 11 | | | | | | |
+| 12 | | | | | | |
+| 13 | | | | | | |
+| 14 | | | | | | |
+| 15 | | | | | | |
+| 16 | | | | | | |
+| 17 | | | | | | |
+| 18 | | | | | | |
+| 19 | | | | | | |
+| 20 | | | | | | |
 
 ## Findings log
 
@@ -83,3 +117,4 @@ Fill this in as it's traced.
 |---|---|
 | | BQ79616 found on daughter board, used as base device |
 | | ISO7721-Q1 (`7721Q`) found next to the header |
+| | Header is 20-way with 4 pins missing, which is likely an isolation (creepage) gap |
