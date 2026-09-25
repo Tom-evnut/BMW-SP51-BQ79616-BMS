@@ -15,6 +15,7 @@ The BMW SME carries a daughter board with:
 | `HC595` | TSSOP-16 | 74HC595 serial-in / parallel-out shift register | High | Digital **outputs**, probably driven by the BQ79616 SPI controller |
 | `HEF4021BT` | SOIC-16 | Nexperia HEF4021B parallel-in / serial-out shift register | High | Digital **inputs**, read by the BQ79616 SPI controller |
 | `46 PA1Q` (read as `PA10`), rear | HVSSOP-8 (DGN) | TI **TPS7A6650-Q1**, 5.0 V / 150 mA LDO, 4–40 V input, power-good output | High (TI marking lookup: PA1Q) | 5 V rail for the isolated domain, fed from header B10 |
+| `46K` / `2904B` (read as `29048`) / TI logo (×2, upper-left of BQ79616) | 8-pin TSSOP/VSSOP | TI **LM2904B** dual op-amp, 36 V, 1.2 MHz. If a Q, A or T follows the B, it's the automotive LM2904B-Q1 | High (TI marking lookup: 2904B) | Analog front end: buffering or scaling the shunt/HV signals into the BQ79616's VC/GPIO inputs (4 channels) |
 | `BYG23M` | SMA | Vishay BYG23M, ~1 kV-class rectifier | Medium (check rating) | HV network |
 | `3303` | 1206 resistors | 330 kΩ | High | HV divider / insulation-measurement resistor strings |
 | ST logo, DPAK (several, some under grey silicone) | DPAK | ST, unidentified | — | Likely HV MOSFETs switching the measurement network |
