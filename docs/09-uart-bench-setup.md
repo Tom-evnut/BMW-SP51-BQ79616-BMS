@@ -27,6 +27,22 @@ Floating 12 V bench supply              USB-UART adapter (3.3 V logic)
   hurt anything, but keeping the domains separate matches how the board is used in the car.
 - Expected supply current: about 10 mA through the 1.2 kΩ load, plus about 20 mA inrush when the BQ79616 wakes.
 
+## Bench measurements
+
+| Date | Condition | B10 supply | Current | Notes |
+|---|---|---|---|---|
+| | Isolated side only (A8 unpowered, UART not connected) | 13.26 V | 63 mA | Higher than the ~20–25 mA budget below, so there is an extra load to find |
+
+Rough current budget on B10:
+
+| Load | Current |
+|---|---|
+| 1.2 kΩ B10–A10 path | ~11 mA at 13 V |
+| BQ79616 in SHUTDOWN / ACTIVE (idle) | 16 µA / ~11.6 mA |
+| 5 V rail: ISO7721, 2 × INA240, 2 × LM2904B, logic | ~8–10 mA |
+
+A successful WAKE should raise the supply current by about 12 mA, as the BQ79616 goes from SHUTDOWN to ACTIVE.
+
 ## UART
 
 - 1 Mbaud, 8N1, idle high, half duplex. Send a command and wait for the full response before sending the next.
