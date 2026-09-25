@@ -56,7 +56,8 @@ using the SimpBMS / Victron CAN protocol.
 | [docs/06-sniffing-guide.md](docs/06-sniffing-guide.md) | Safe setup and what to capture from the original SME |
 | [docs/07-zombieverter-can.md](docs/07-zombieverter-can.md) | SimpBMS/Victron CAN as ZombieVerter decodes it, and the gotchas |
 | [docs/08-master-hardware.md](docs/08-master-hardware.md) | New master board design notes |
+| [docs/09-uart-bench-setup.md](docs/09-uart-bench-setup.md) | Wiring and first session for talking to the daughter-board BQ79616 directly over UART |
 | [datasheets/](datasheets/) | TI datasheets (see [datasheets/README.md](datasheets/README.md)) |
-| [tools/](tools/) | Helper scripts (CRC calculator) |
+| [tools/](tools/) | `bq_crc.py` (CRC calculator), `bq_uart.py` (wake and read/write registers over a USB-UART adapter) |
 | [captures/](captures/) | Logic-analyser captures from the SME |
 | `hardware/`, `firmware/` | Master board design and firmware (to come) |
