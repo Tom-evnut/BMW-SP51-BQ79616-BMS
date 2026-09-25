@@ -15,6 +15,16 @@
 - Solder thin (30 AWG) wires to series or pull-up resistors, vias, or the header. Don't clip fine-pitch IC pins.
 - Never probe the daisy-chain COM lines or anything on the BQ side until its reference has been proven.
 
+## Probe points on the daughter-board header (confirmed)
+
+Pin numbering is described in [05-sme-daughterboard.md](05-sme-daughterboard.md).
+
+| Header pin | Signal | Analyser |
+|---|---|---|
+| **A6** | Host-side GND (ISO7721 GND2) | Analyser GND |
+| **A7** | Host TX → BQ79616 RX (ISO7721 INA) | CH0 |
+| **B7** | Host RX ← BQ79616 TX (ISO7721 OUTB) | CH1 |
+
 ## Logic analyser settings
 
 | Setting | Value |
