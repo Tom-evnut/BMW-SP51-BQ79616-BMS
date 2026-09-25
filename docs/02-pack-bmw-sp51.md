@@ -37,7 +37,7 @@ SME MCU ─UART─ ISO7721 ─ BQ79616 (base, addr 0) ══► Module 1 (addr 1
 - [ ] One BQ79616 per module? What is the exact part (BQ79616 / BQ79616H / BQ79614 / BQ79612) and silicon revision?
 - [ ] Cell-tap to VC-pin mapping, and how the 4 unused inputs are handled.
 - [ ] NTC part number, and the GPIO mapping per module.
-- [x] Chain isolation at the base device: **transformer** (daughter board, left 2 header pins)
+- [x] Chain isolation at the base device: **transformer** (daughter board, header pins A1 + B1)
 - [ ] Chain isolation on the module CSC boards, and linear vs ring
 - [ ] Cell chemistry and capacity.
 - [ ] What the base BQ79616's VC/CB/GPIO pins on the daughter board connect to (a pure bridge, or measuring something?).

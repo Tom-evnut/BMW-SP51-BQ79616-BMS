@@ -110,8 +110,21 @@ The header is **20-way with 4 pins missing** (16 populated). Missing pins in a h
 - **BQ side (treat as HV until proven otherwise):** daisy-chain COMH/COML pairs (the chain connector may sit on the
   SME main board), BQ79616 BAT supply, and possibly bus-bar or voltage sense.
 
-Layout, pitch and the positions of the missing pins: _to record_ (for example 2 × 10 at 2.54 mm; odd pins on one row,
-even pins on the other).
+### Pin numbering convention
+
+Use this until the connector's own pin-1 marking or part number is known. View the **component side** with the header
+at the **bottom edge** of the board:
+
+```
+            (board centre / ISO7721 above)
+   A1  A2  A3  A4  A5  A6  A7  A8  A9  A10   ← Row A: surface-mount pads, board side
+   B1  B2  B3  B4  B5  B6  B7  B8  B9  B10   ← Row B: through-hole, board edge side
+            (board edge below)
+```
+
+- Columns are numbered 1–10 from left to right in this view.
+- **From the back of the board, everything is mirrored: column 1 is on the right.**
+- Missing pins (from photos, to confirm): B2, B3, B8, B9.
 
 ### Procedure (unpowered, daughter board removed if possible)
 
@@ -125,7 +138,7 @@ even pins on the other).
 
 ### Confirmed so far
 
-- **Left 2 header pins = daisy-chain pair**, through **isolation transformer(s)** on the daughter board. This is most
+- **A1 + B1 = daisy-chain pair**, through **isolation transformer(s)** on the daughter board. This is most
   likely BQ79616 COMHP/COMHN, running up to module 1 via the SME main board.
   - The base-device end of the chain is **transformer-isolated**. The new master must match this: same or equivalent
     transformer, and keep the P/N polarity.
@@ -141,26 +154,26 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 
 | Pin | Populated | Domain | Net | Connects to | Voltage (powered) | Notes |
 |---|---|---|---|---|---|---|
-| 1 | | | | | | |
-| 2 | | | | | | |
-| 3 | | | | | | |
-| 4 | | | | | | |
-| 5 | | | | | | |
-| 6 | | | | | | |
-| 7 | | | | | | |
-| 8 | | | | | | |
-| 9 | | | | | | |
-| 10 | | | | | | |
-| 11 | | | | | | |
-| 12 | | | | | | |
-| 13 | | | | | | |
-| 14 | | | | | | |
-| 15 | | | | | | |
-| 16 | | | | | | |
-| 17 | | | | | | |
-| 18 | | | | | | |
-| 19 | | | | | | |
-| 20 | | | | | | |
+| A1 | Yes | Chain (transformer-isolated) | Daisy-chain pair (P/N to confirm) | Isolation transformer → BQ79616 COMH? (to confirm) | | |
+| A2 | Yes |  |  |  | | |
+| A3 | Yes |  |  |  | | |
+| A4 | Yes |  |  |  | | |
+| A5 | Yes |  |  |  | | |
+| A6 | Yes |  |  |  | | |
+| A7 | Yes |  |  |  | | |
+| A8 | Yes |  |  |  | | |
+| A9 | Yes |  |  |  | | |
+| A10 | Yes |  |  |  | | |
+| B1 | Yes | Chain (transformer-isolated) | Daisy-chain pair (P/N to confirm) | Isolation transformer → BQ79616 COMH? (to confirm) | | |
+| B2 | No (to confirm) | — |  |  | | |
+| B3 | No (to confirm) | — |  |  | | |
+| B4 | Yes |  |  |  | | |
+| B5 | Yes |  |  |  | | |
+| B6 | Yes |  |  |  | | |
+| B7 | Yes |  |  |  | | |
+| B8 | No (to confirm) | — |  |  | | |
+| B9 | No (to confirm) | — |  |  | | |
+| B10 | Yes |  |  |  | | |
 
 ## Findings log
 
@@ -169,5 +182,5 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | BQ79616 found on daughter board, used as base device |
 | | ISO7721-Q1 (`7721Q`) found next to the header |
 | | Header is 20-way with 4 pins missing, which is likely an isolation (creepage) gap |
-| | Left 2 header pins go through isolation transformers: this is the daisy-chain pair to the modules |
+| | A1 + B1 (left column) go through isolation transformers: this is the daisy-chain pair to the modules |
 | | Photos: INA240A1-Q1 ×2, 74HC595, HEF4021B and a HV network (BYG23M, 330 kΩ strings, ST DPAKs) point to a pack-monitor function |
