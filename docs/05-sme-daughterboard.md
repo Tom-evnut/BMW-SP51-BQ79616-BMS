@@ -20,7 +20,7 @@ The BMW SME carries a daughter board with:
 | onsemi `RXB BH-16`(?) | SOT-223 | Unidentified | — | Probably a regulator |
 | Würth `20059 V1` | SMD magnetic | Würth, unidentified | — | Transformer or choke |
 | `GF 820 EZR` (×3, rear) | Radial can | ~820 µF capacitor | Medium | Bulk capacitance for a switching supply |
-| Beige 2-way connector | — | — | — | Possibly the daisy-chain pair to module 1, or a sensor |
+| Beige 2-way connector | — | — | — | Unknown. The chain goes out through the header instead, so this may be shunt sense or a sensor |
 
 ### Interpretation
 
@@ -123,6 +123,18 @@ even pins on the other).
    those pins sit together on the far side of the missing-pin gap.
 4. For COM lines, note what sits between the BQ79616 pins and the header: capacitors, chokes or transformers.
 
+### Confirmed so far
+
+- **Left 2 header pins = daisy-chain pair**, through **isolation transformer(s)** on the daughter board. This is most
+  likely BQ79616 COMHP/COMHN, running up to module 1 via the SME main board.
+  - The base-device end of the chain is **transformer-isolated**. The new master must match this: same or equivalent
+    transformer, and keep the P/N polarity.
+  - Still to find out:
+    - Which BQ79616 pins (42/43 COMH or 40/41 COML) the transformer connects to.
+    - The transformer's part number.
+    - Whether a second transformer-coupled pair exists. If it does, that's the ring return; if not, it's a linear chain.
+  - Don't sniff these lines. They carry TI's differential chain signalling, not UART. Sniff the host UART instead.
+
 ### Worksheet
 
 Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin missing.
@@ -157,4 +169,5 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | BQ79616 found on daughter board, used as base device |
 | | ISO7721-Q1 (`7721Q`) found next to the header |
 | | Header is 20-way with 4 pins missing, which is likely an isolation (creepage) gap |
+| | Left 2 header pins go through isolation transformers: this is the daisy-chain pair to the modules |
 | | Photos: INA240A1-Q1 ×2, 74HC595, HEF4021B and a HV network (BYG23M, 330 kΩ strings, ST DPAKs) point to a pack-monitor function |
