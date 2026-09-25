@@ -175,15 +175,17 @@ Pin numbering confirmed as standard: anticlockwise from the dot, pin 1 = BAT. Ch
 | VC11 | 13 | **5 V rail (0 Ω)** | CB11 (pin 12) |  |
 | VC10 | 15 |  | CB10 (pin 14) |  |
 | VC9 | 17 |  | CB9 (pin 16) |  |
-| VC8 | 19 |  | CB8 (pin 18) |  |
-| VC7 | 21 |  | CB7 (pin 20) |  |
-| VC6 | 23 |  | CB6 (pin 22) |  |
-| VC5 | 25 |  | CB5 (pin 24) |  |
-| VC4 | 27 |  | CB4 (pin 26) |  |
-| VC3 | 29 |  | CB3 (pin 28) |  |
-| VC2 | 31 |  | CB2 (pin 30) |  |
-| VC1 | 33 |  | CB1 (pin 32) |  |
+| VC8 | 19 |  | CB8 (pin 18) | **A10 / GND (0 Ω)** |
+| VC7 | 21 |  | CB7 (pin 20) | **A10 / GND (0 Ω)** |
+| VC6 | 23 |  | CB6 (pin 22) | **A10 / GND (0 Ω)** |
+| VC5 | 25 |  | CB5 (pin 24) | **A10 / GND (0 Ω)** |
+| VC4 | 27 |  | CB4 (pin 26) | **A10 / GND (0 Ω)** |
+| VC3 | 29 |  | CB3 (pin 28) | **A10 / GND (0 Ω)** |
+| VC2 | 31 |  | CB2 (pin 30) | **A10 / GND (0 Ω)** |
+| VC1 | 33 |  | CB1 (pin 32) | **A10 / GND (0 Ω)** |
 | VC0 | 35 |  | CB0 (pin 34) | **A10 / GND (0 Ω)** |
+
+Expect BMW to disable the undervoltage comparators on these channels (`UV_DISABLE1/2`, 0x000C–0x000D); look for those writes in the captures.
 
 Still to record: what each remaining VC and CB pin connects to (5 V rail, A10, INA240 output, HV divider, a
 resistor/capacitor filter), and where **BAT (pin 1)** is fed from.
@@ -234,6 +236,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | BQ79616 found on daughter board, used as base device |
 | | ISO7721-Q1 (`7721Q`) found next to the header |
 | | Header is 20-way with 4 pins missing, which is likely an isolation (creepage) gap |
+| | CB1–CB8 (even pins 18–32) are tied directly to A10 / GND, as is CB0 |
 | | Standard BQ79616 pin numbering confirmed (pins 46 CVSS and 34 CB0 = A10). VC14 (pin 7) and VC11 (pin 13) are tied to the 5 V rail (0 Ω) |
 | | The 5 V LDO rail also feeds the HEF4021B. It connects to the BQ79616 too, pin not yet identified (candidates: 45 CVDD, 51 TSREF, 52 RX pull-up, 55–58 GPIO pull-ups, 62 NFAULT pull-up) |
 | | TPS7A6650-Q1 5 V output (large SMD capacitors) feeds ISO7721 pin 1 (VCC1): the BQ side of the isolator runs at 5 V |
