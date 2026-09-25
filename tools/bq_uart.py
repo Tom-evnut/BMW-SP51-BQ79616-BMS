@@ -12,6 +12,7 @@ Hardware (see docs/09-uart-bench-setup.md):
 Examples:
     python bq_uart.py COM5 info            # wake, read PARTID/REV/address/OTP config
     python bq_uart.py COM5 cells           # wake, start main ADC, read VCELL1..16
+    python bq_uart.py COM5 bat             # wake, start AUX ADC, read BAT pin voltage
     python bq_uart.py COM5 read 0x0500 1   # read 1 byte from PARTID
     python bq_uart.py COM5 write 0x030D 0x06
 
@@ -26,6 +27,7 @@ from bq_crc import append_crc, frame_ok
 BAUD = 1_000_000
 WAKE_BAUD = 4000  # 0x00 at 4000 baud = start + 8 data bits low = 2.25 ms (tHLD_WAKE: 2-2.5 ms)
 CELL_LSB_V = 190.73e-6
+AUX_BAT_LSB_V = 3.05e-3
 
 # Command INIT bytes (bit 7 = command, bits 6:4 = request type)
 SINGLE_READ = 0x80
@@ -39,10 +41,12 @@ REG = {
     "COMM_CTRL": 0x0308,
     "CONTROL1": 0x0309,
     "ADC_CTRL1": 0x030D,
+    "ADC_CTRL3": 0x030F,
     "PARTID": 0x0500,
     "DEV_STAT": 0x052C,
     "FAULT_SUMMARY": 0x052D,
     "VCELL16_HI": 0x0568,
+    "AUX_BAT_HI": 0x05B6,
     "DEV_REVID": 0x0E00,
 }
 
@@ -188,10 +192,17 @@ def cmd_cells(bq: BQ):
         print(row)
 
 
+def cmd_bat(bq: BQ):
+    bq.write(REG["ADC_CTRL3"], bytes([0x06]))  # AUX_GO | AUX_MODE = continuous
+    time.sleep(0.1)
+    raw = int.from_bytes(bq.read(REG["AUX_BAT_HI"], 2), "big", signed=True)  # read HI+LO together
+    print(f"AUX_BAT raw {raw}  ->  BAT pin = {raw * AUX_BAT_LSB_V:.3f} V")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("port")
-    ap.add_argument("cmd", choices=["info", "cells", "read", "write", "wake"])
+    ap.add_argument("cmd", choices=["info", "cells", "bat", "read", "write", "wake"])
     ap.add_argument("args", nargs="*")
     ap.add_argument("--no-wake", action="store_true", help="skip the WAKE ping and auto-address")
     ap.add_argument("-v", "--verbose", action="store_true", help="print raw frames")
@@ -205,6 +216,8 @@ def main():
         cmd_info(bq)
     elif a.cmd == "cells":
         cmd_cells(bq)
+    elif a.cmd == "bat":
+        cmd_bat(bq)
     elif a.cmd == "read":
         reg, length = int(a.args[0], 0), int(a.args[1], 0) if len(a.args) > 1 else 1
         print(hexs(bq.read(reg, length)))

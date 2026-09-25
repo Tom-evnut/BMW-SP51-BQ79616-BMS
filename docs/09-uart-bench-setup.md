@@ -114,6 +114,18 @@ base device. `bq_uart.py` now does this automatically (`init_single()`): DLL-syn
 | FAULT_SUMMARY | 0x12 | FAULT_COMM + FAULT_SYS (expected after the bench experiments; not yet cleared) |
 | OTP shadow 0x0000–0x0037 | Factory defaults (ACTIVE_CELL 0x0A = 16S, PWR_TRANSIT_CONF 0x10, CUST_CRC 0x31F3) | **BMW did not program customer OTP.** All configuration is written at runtime by the SME, so it has to be sniffed |
 
+### BAT supply (AUX ADC)
+
+`python bq_uart.py COM12 bat` writes `ADC_CTRL3` (0x030F) = 0x06 (AUX_GO, continuous) and reads `AUX_BAT` (0x05B6,
+3.05 mV/LSB).
+
+| Bench supply at B10 | AUX_BAT (3 reads) |
+|---|---|
+| 13.23 V | 13.237 / 13.243 / 13.231 V |
+
+This agrees with the bench supply to within a few mV, so the ~30 Ω in series with BAT carries negligible current. The
+BCP56 collector probably takes its current before that resistor.
+
 ### Main ADC, no HV connected, no current
 
 VCn node voltages relative to A10. VCELL10 saturates (+6.25 V limit), so the upper nodes are referenced to VC11 = 5.00 V
