@@ -27,6 +27,23 @@ Floating 12 V bench supply              USB-UART adapter (3.3 V logic)
   hurt anything, but keeping the domains separate matches how the board is used in the car.
 - Expected supply current: about 10 mA through the 1.2 kΩ load, plus about 20 mA inrush when the BQ79616 wakes.
 
+### Using an FTDI TTL-232R-5V-WE cable
+
+The FTDI TTL-232R-5V cable (FT232R chip, 5 V logic, wire-ended) works directly. The ISO7721 host side accepts 5 V, so
+power A8 from the cable's own 5 V wire and all the logic levels match. The FT232R supports both 1 Mbaud and the
+4000 baud used for the WAKE pulse.
+
+| Cable wire | Signal | Header pin |
+|---|---|---|
+| Black | GND | **A6** |
+| Orange | TXD (output) | **A7** |
+| Yellow | RXD (input) | **B7** |
+| Red | VCC 5 V | **A8** |
+| Brown | CTS# | not connected |
+| Green | RTS# | not connected |
+
+Check the colours against the label or datasheet of your cable before connecting.
+
 ## Bench measurements
 
 | Date | Condition | B10 supply | Current | Notes |
