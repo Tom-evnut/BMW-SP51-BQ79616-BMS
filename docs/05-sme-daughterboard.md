@@ -188,7 +188,9 @@ Pin numbering confirmed as standard: anticlockwise from the dot, pin 1 = BAT. Ch
 Expect BMW to disable the undervoltage comparators on these channels (`UV_DISABLE1/2`, 0x000C–0x000D); look for those writes in the captures.
 
 Still to record: what each remaining VC and CB pin connects to (5 V rail, A10, INA240 output, HV divider, a
-resistor/capacitor filter), and where **BAT (pin 1)** is fed from.
+resistor/capacitor filter), and the BQ79616's external NPN pre-regulator (BAT → collector, NPNB pin 48 → base, LDOIN pin 47 → emitter). The onsemi SOT-223 next to the BQ79616 is a candidate.
+
+BAT (pin 1) is fed from header **B10 through about 30 Ω** (confirmed).
 
 ### Confirmed so far
 
@@ -227,7 +229,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | B7 | Yes | LV / host | Host UART RX (← BQ79616 TX) | ISO7721 pin 6 (OUTB) | Idle high | Confirmed. Sniff channel: BMS chain → host |
 | B8 | Yes | | | | | |
 | B9 | No | — | | | | Unpopulated (confirmed) |
-| B10 | Yes | **Isolated / BQ side** | **Isolated-domain supply input** (return = A10) | TPS7A6650-Q1 pin 1 (VIN) **and** pin 2 (EN), directly (confirmed) | Unpowered: **1.2 kΩ to A10, same both polarities** | EN tied to VIN, so the LDO runs whenever B10 is powered. Check for a feed to BQ79616 BAT (pin 1). Measure the voltage powered (DMM only) |
+| B10 | Yes | **Isolated / BQ side** | **Isolated-domain supply input** (return = A10) | TPS7A6650-Q1 pin 1 (VIN) **and** pin 2 (EN), directly (confirmed) | Unpowered: **1.2 kΩ to A10, same both polarities** | EN tied to VIN, so the LDO runs whenever B10 is powered. **Also feeds BQ79616 BAT (pin 1) through about 30 Ω**, so the supply must be 9–40 V. Measure the voltage powered (DMM only) |
 
 ## Findings log
 
@@ -236,6 +238,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | BQ79616 found on daughter board, used as base device |
 | | ISO7721-Q1 (`7721Q`) found next to the header |
 | | Header is 20-way with 4 pins missing, which is likely an isolation (creepage) gap |
+| | BQ79616 BAT (pin 1) reads about 30 Ω to B10: the isolated supply powers the BQ79616 directly, so it must be 9–40 V (probably about 12 V) |
 | | CB1–CB8 (even pins 18–32) are tied directly to A10 / GND, as is CB0 |
 | | Standard BQ79616 pin numbering confirmed (pins 46 CVSS and 34 CB0 = A10). VC14 (pin 7) and VC11 (pin 13) are tied to the 5 V rail (0 Ω) |
 | | The 5 V LDO rail also feeds the HEF4021B. It connects to the BQ79616 too, pin not yet identified (candidates: 45 CVDD, 51 TSREF, 52 RX pull-up, 55–58 GPIO pull-ups, 62 NFAULT pull-up) |
