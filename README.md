@@ -13,10 +13,44 @@ using the SimpBMS / Victron CAN protocol.
 |---|---|
 | Pack topology | Known: 9 modules × 12S = 108S |
 | Original BMW master (SME) | In hand. BQ79616 base device on a daughter board, UART isolated by an ISO7721-Q1 |
-| Daughter-board header pinout | **In progress**, see [docs/05-sme-daughterboard.md](docs/05-sme-daughterboard.md) |
+| Daughter-board header pinout | **Mostly mapped**: UART, host supply, isolated supply and chain pair known. See [docs/05](docs/05-sme-daughterboard.md) |
+| Daughter-board function | Pack monitor: 2 × INA240A1-Q1 current channels on BQ79616 VC1/VC2, LM2904B front end, HV/insulation network, 74HC595/HEF4021B I/O |
+| UART to base BQ79616 | **Working** on the bench (TTL-232R-5V cable, [tools/bq_uart.py](tools/bq_uart.py)). See [docs/09](docs/09-uart-bench-setup.md) |
+| BMW configuration | Not in OTP (factory defaults), so it's written at runtime and needs to be sniffed from the SME |
 | Bus captures | Not started |
 | New master hardware | Architecture drafted |
 | Firmware | Not started |
+
+## Daughter-board header (summary)
+
+Viewed from the component side, header at the bottom edge. Row A = surface-mount row, row B = through-hole row.
+Columns 2 and 9 are unpopulated.
+
+```
+   A1 │ ·  │ A3 A4 A5 [A6 GND] [A7 TX] [A8 VCC] │ ·  │ [A10 ISO-GND]
+   B1 │ ·  │ B3 B4 B5  B6      [B7 RX]  B8      │ ·  │ [B10 ISO-SUPPLY 9–40 V]
+ chain│gap │          host / LV domain          │gap │  isolated (BQ) domain
+```
+
+| Pin | Function |
+|---|---|
+| A1, B1 | Daisy-chain pair to the modules, via isolation transformer |
+| A6 | Host GND (ISO7721 GND2) |
+| A7 | Host UART TX → BQ79616 RX (ISO7721 INA) |
+| B7 | Host UART RX ← BQ79616 TX (ISO7721 OUTB) |
+| A8 | Host logic supply 2.25–5.5 V (ISO7721 VCC2) |
+| A10 | Isolated GND. **Never link to A6** |
+| B10 | Isolated supply: BQ79616 BAT (through ~30 Ω) and TPS7A6650-Q1 5 V LDO |
+| A3–A5, B3–B6, B8 | Not yet mapped |
+
+## Where we stopped / next steps
+
+1. Check the right-hand INA240's REF1/REF2 pins (pins 7 and 3). Its output sits at 1.95 V, while the left one is at 2.50 V.
+2. Trace BQ79616 VC4 and VC8–VC16 (LM2904B outputs, HV network) to give the upper channels firm meanings.
+3. Map the remaining middle header pins (A3–A5, B3–B6, B8).
+4. Check whether the chain is a ring (a second transformer-coupled pair?).
+5. Sniff the SME's UART on A6/A7/B7 during start-up to capture BMW's runtime configuration.
+6. Identify the remaining parts: ST DPAKs, Würth magnetic, rear power stage.
 
 ## Pack summary
 
