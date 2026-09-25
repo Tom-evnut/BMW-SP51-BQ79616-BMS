@@ -98,11 +98,49 @@ A response is `INIT (length − 1) | DEV ADR | REG hi | REG lo | DATA … | CRC 
 - **VCELL11 / VCELL14:** involve the 5 V rail, so expect readings related to 5 V, depending on what VC10, VC12, VC13
   and VC15 are connected to.
 
+## First contact results
+
+Bench setup: TTL-232R-5V cable on COM12, B10 = 13.23 V.
+
+**Key lesson:** after WAKE, the device **ignores reads until the auto-address sequence has run**, even when it's a lone
+base device. `bq_uart.py` now does this automatically (`init_single()`): DLL-sync broadcast write, `CONTROL1[ADDR_WR]`,
+`DIR0_ADDR = 0`, `COMM_CTRL = 0`, DLL-sync broadcast read.
+
+| Register | Value | Meaning |
+|---|---|---|
+| PARTID | 0x21 | BQ79616 |
+| DEV_REVID | 0x00 | Normal operating mode |
+| DEV_STAT | 0x60 | Factory and customer CRC checks completed |
+| FAULT_SUMMARY | 0x12 | FAULT_COMM + FAULT_SYS (expected after the bench experiments; not yet cleared) |
+| OTP shadow 0x0000–0x0037 | Factory defaults (ACTIVE_CELL 0x0A = 16S, PWR_TRANSIT_CONF 0x10, CUST_CRC 0x31F3) | **BMW did not program customer OTP.** All configuration is written at runtime by the SME, so it has to be sniffed |
+
+### Main ADC, no HV connected, no current
+
+VCn node voltages relative to A10. VCELL10 saturates (+6.25 V limit), so the upper nodes are referenced to VC11 = 5.00 V
+(DMM-confirmed).
+
+| Node | Voltage | Interpretation |
+|---|---|---|
+| VC0 | 0 | GND |
+| VC1 | 2.500 V | Left INA240 output: exactly mid-scale, so **bidirectional with a 2.5 V reference, 0 A** |
+| VC2 | 1.950 V | Right INA240 output: **not** 2.5 V. Different reference or configuration; check its REF1/REF2 pins |
+| VC3, VC5, VC6, VC7 | 5.00 V | On the 5 V rail |
+| VC4, VC8, VC9 | 5.26 / 5.34 / 5.12 V | Slightly above 5 V, so driven by something on a higher supply (LM2904B outputs?) |
+| VC10 | ~10.8 V | Above the 5 V rail, possibly derived from B10 |
+| VC11 | 5.00 V | 5 V rail (confirmed) |
+| VC12, VC13 | ~7.57 V | ~2.57 V above the 5 V reference |
+| VC14 | 5.00 V | 5 V rail (confirmed; computed value agrees) |
+| VC15 | ~7.61 V | ~2.61 V above VC14 |
+| VC16 | ~9.94 V | |
+
+The upper channels (VCELL12, VCELL15, VCELL16 ≈ 2.3–2.6 V) look like **bipolar signals centred about 2.5 V above a 5 V
+reference**, which is typical for HV-divider or insulation measurements. That needs confirming by tracing.
+
 ## Troubleshooting
 
 | Symptom | Check |
 |---|---|
-| No response at all | WAKE pulse width (scope A7): 2–2.5 ms. B10 ≥ 9 V. A8 = 3.3 V. TX/RX swapped? |
+| No response at all | Did the auto-address sequence run? Reads are ignored before it. Does the supply current rise ~10 mA after WAKE? B10 ≥ 9 V. TX/RX swapped? Is the current limit high enough for the wake-up surge? |
 | Response with a CRC error | Baud accuracy: the BQ79616 tolerates about ±1.5 %. Check the ground (A6) connection |
 | No response at address 0 | BMW may have programmed a different OTP address. Try a broadcast read (`0xC0`), or broadcast-write `CONTROL1[ADDR_WR] = 1` followed by broadcast-write `DIR0_ADDR = 0` |
 | Works once, then stops | Communication timeout (`COMM_TIMEOUT_CONF`) may send the device to sleep or shutdown. Send WAKE again |

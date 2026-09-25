@@ -102,6 +102,9 @@ Common INIT values:
    - Single write to the top of stack (address 9): `TOP_STACK = 1`.
 6. **Dummy read** (broadcast read `OTP_ECC_DATAIN1…8`) to synchronise the read-direction DLLs. Some responses may be missing.
 
+**Until auto-addressing is done, a freshly woken device only accepts broadcast writes and ignores reads**, even a
+standalone base device. This was confirmed on the SME daughter board.
+
 Stack reads are answered by stack devices only, **top of stack first**. Broadcast reads include the base device.
 
 ## Key registers
@@ -150,8 +153,8 @@ Stack reads are answered by stack devices only, **top of stack first**. Broadcas
 
 | Addr | Name | Notes |
 |---|---|---|
-| 0x0500 | PARTID | |
-| 0x0E00 | DEV_REVID | Check this: some registers differ between silicon revisions |
+| 0x0500 | PARTID | 0x21 = BQ79616, 0x01 = BQ79614, 0x02 = BQ79612 |
+| 0x0E00 | DEV_REVID | 0x00 = normal operating mode. Non-zero = factory test mode detected (safety mechanism SM426) |
 | 0x0527–0x0528 | ADC_STAT1/2 | |
 | 0x052C | DEV_STAT | |
 | 0x052D | FAULT_SUMMARY | |

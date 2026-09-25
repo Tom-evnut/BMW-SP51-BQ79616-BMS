@@ -46,6 +46,8 @@ REG = {
     "DEV_REVID": 0x0E00,
 }
 
+PARTIDS = {0x21: "BQ79616", 0x01: "BQ79614", 0x02: "BQ79612"}
+
 OTP_NAMES = {
     0x00: "DIR0_ADDR_OTP", 0x01: "DIR1_ADDR_OTP", 0x02: "DEV_CONF", 0x03: "ACTIVE_CELL",
     0x05: "BBVC_POSN1", 0x06: "BBVC_POSN2", 0x07: "ADC_CONF1", 0x08: "ADC_CONF2",
@@ -116,6 +118,17 @@ class BQ:
         time.sleep(0.01)  # tSU(WAKE_SHUT) is ~1 ms; be generous
         self.ser.reset_input_buffer()
 
+    def init_single(self):
+        """Auto-address a lone base device as address 0 (datasheet 7.3.6.1.3.2).
+
+        After WAKE the device only accepts broadcast writes; reads are ignored until this has run.
+        """
+        self.write(0x0343, bytes(8), init=BROADCAST_WRITE)        # DLL sync: OTP_ECC_DATAIN1..8 = 0
+        self.write(REG["CONTROL1"], bytes([0x01]), init=BROADCAST_WRITE)  # ADDR_WR = 1
+        self.write(REG["DIR0_ADDR"], bytes([0x00]), init=BROADCAST_WRITE)  # address 0
+        self.write(REG["COMM_CTRL"], bytes([0x00]), init=BROADCAST_WRITE)  # base device, not top of stack
+        self.xfer(build_read(0, 0x0343, 8, init=BROADCAST_READ), expect=14)  # DLL sync dummy read
+
     def xfer(self, frame: bytes, expect: int = 0) -> bytes:
         if self.verbose:
             print(f"  TX: {hexs(frame)}")
@@ -140,11 +153,13 @@ class BQ:
             raise IOError(f"CRC error reading 0x{reg:04X}: {hexs(raw)}")
         return data
 
-    def write(self, reg: int, data: bytes, dev: int = 0):
-        self.xfer(build_write(dev, reg, data))
+    def write(self, reg: int, data: bytes, dev: int = 0, init: int = SINGLE_WRITE):
+        self.xfer(build_write(dev, reg, data, init=init))
 
 
 def cmd_info(bq: BQ):
+    partid = bq.read(REG["PARTID"], 1)[0]
+    print(f"Device: {PARTIDS.get(partid, 'unknown')}")
     for name in ("PARTID", "DEV_REVID", "DIR0_ADDR", "COMM_CTRL", "DEV_STAT", "FAULT_SUMMARY"):
         val = bq.read(REG[name], 1)[0]
         print(f"{name:<14} 0x{REG[name]:04X} = 0x{val:02X}")
@@ -159,10 +174,18 @@ def cmd_cells(bq: BQ):
     bq.write(REG["ADC_CTRL1"], bytes([0x06]))  # MAIN_GO | MAIN_MODE = continuous
     time.sleep(0.05)
     data = bq.read(REG["VCELL16_HI"], 32)
-    for i in range(16):
-        raw = int.from_bytes(data[2 * i:2 * i + 2], "big", signed=True)
-        cell = 16 - i
-        print(f"VCELL{cell:<2} raw {raw:6d}  {raw * CELL_LSB_V:8.4f} V")
+    cells = {16 - i: int.from_bytes(data[2 * i:2 * i + 2], "big", signed=True) for i in range(16)}
+    # Node voltage VCn relative to VC0 (isolated GND) = sum of VCELL1..n. Readings outside
+    # the 0-5 V differential range (or near +/-32767 counts) are out of spec and unreliable.
+    node = 0.0
+    rows = []
+    for n in range(1, 17):
+        v = cells[n] * CELL_LSB_V
+        node += v
+        flag = "  <- outside 0-5 V range" if not -0.3 <= v <= 5.0 else ""
+        rows.append(f"VCELL{n:<2} raw {cells[n]:6d}  {v:8.4f} V   VC{n:<2} = {node:7.3f} V{flag}")
+    for row in reversed(rows):
+        print(row)
 
 
 def main():
@@ -170,13 +193,14 @@ def main():
     ap.add_argument("port")
     ap.add_argument("cmd", choices=["info", "cells", "read", "write", "wake"])
     ap.add_argument("args", nargs="*")
-    ap.add_argument("--no-wake", action="store_true", help="skip the WAKE ping")
+    ap.add_argument("--no-wake", action="store_true", help="skip the WAKE ping and auto-address")
     ap.add_argument("-v", "--verbose", action="store_true", help="print raw frames")
     a = ap.parse_args()
 
     bq = BQ(a.port, a.verbose)
     if not a.no_wake:
         bq.wake()
+        bq.init_single()
     if a.cmd == "info":
         cmd_info(bq)
     elif a.cmd == "cells":
