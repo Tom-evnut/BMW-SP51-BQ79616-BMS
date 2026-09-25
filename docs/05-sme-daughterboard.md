@@ -14,6 +14,7 @@ The BMW SME carries a daughter board with:
 | `240A1Q` (×2) | SOIC-8 | TI INA240A1-Q1 current-sense amplifier (gain 20 V/V) | High | Pack current from a shunt, fed into the BQ79616 GPIO ADC |
 | `HC595` | TSSOP-16 | 74HC595 serial-in / parallel-out shift register | High | Digital **outputs**, probably driven by the BQ79616 SPI controller |
 | `HEF4021BT` | SOIC-16 | Nexperia HEF4021B parallel-in / serial-out shift register | High | Digital **inputs**, read by the BQ79616 SPI controller |
+| `46 PA1Q` (read as `PA10`), rear | HVSSOP-8 (DGN) | TI **TPS7A6650-Q1**, 5.0 V / 150 mA LDO, 4–40 V input, power-good output | High (TI marking lookup: PA1Q) | 5 V rail for the isolated domain, fed from header B10 |
 | `BYG23M` | SMA | Vishay BYG23M, ~1 kV-class rectifier | Medium (check rating) | HV network |
 | `3303` | 1206 resistors | 330 kΩ | High | HV divider / insulation-measurement resistor strings |
 | ST logo, DPAK (several, some under grey silicone) | DPAK | ST, unidentified | — | Likely HV MOSFETs switching the measurement network |
@@ -193,7 +194,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | B7 | Yes | LV / host | Host UART RX (← BQ79616 TX) | ISO7721 pin 6 (OUTB) | Idle high | Confirmed. Sniff channel: BMS chain → host |
 | B8 | Yes | | | | | |
 | B9 | No | — | | | | Unpopulated (confirmed) |
-| B10 | Yes | Isolated / BQ side? | Isolated-side supply feed? | ? | ? | Next to BQ GND A10. Trace towards BQ79616 BAT (pin 1) / LDOIN (pin 47) or a regulator |
+| B10 | Yes | **Isolated / BQ side** | Isolated-domain supply input (4–40 V?) | TPS7A6650-Q1 (rear), pin to confirm (expect pin 1 VIN) | Measure B10 to A10 with a DMM | Confirmed to reach the LDO. Also check for a feed to BQ79616 BAT (pin 1) |
 
 ## Findings log
 
@@ -202,6 +203,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | BQ79616 found on daughter board, used as base device |
 | | ISO7721-Q1 (`7721Q`) found next to the header |
 | | Header is 20-way with 4 pins missing, which is likely an isolation (creepage) gap |
+| | B10 connects to the rear-side TI `46 PA1Q` = TPS7A6650-Q1 5 V LDO: B10 is the isolated domain's supply input |
 | | A10 = ISO7721 pin 4 (GND1): the isolated BQ-side ground is on the header, behind the column-9 gap |
 | | A8 = ISO7721 pin 8 (VCC2): host logic supply from the SME |
 | | B7 = ISO7721 pin 6 (OUTB): host RX |
