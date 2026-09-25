@@ -137,6 +137,24 @@ at the **bottom edge** of the board:
    those pins sit together on the far side of the missing-pin gap.
 4. For COM lines, note what sits between the BQ79616 pins and the header: capacitors, chokes or transformers.
 
+### ISO7721 → header mapping
+
+Fill this in with the board unpowered, using resistance mode (series resistors won't beep in continuity mode).
+
+| ISO7721 pin | Name | Side (header / BQ) | Header pin(s) | Resistance | Via (series R, etc.) | Notes |
+|---|---|---|---|---|---|---|
+| 1 | VCC1 | | | | | |
+| 2 | OUTA | | | | | |
+| 3 | INB | | | | | |
+| 4 | GND1 | | | | | |
+| 5 | GND2 | | | | | |
+| 6 | OUTB | | | | | |
+| 7 | INA | | | | | |
+| 8 | VCC2 | | | | | |
+
+Isolation check: resistance from the BQ-side GND to every header pin should read open (> 10 MΩ). Header pins A1/B1
+go through a transformer, so they will also read open.
+
 ### Confirmed so far
 
 - **A1 + B1 = daisy-chain pair**, through **isolation transformer(s)** on the daughter board. This is most
