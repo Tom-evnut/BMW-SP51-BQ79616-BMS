@@ -207,7 +207,7 @@ Pin numbering confirmed as standard: anticlockwise from the dot, pin 1 = BAT. Ch
 | VC3 | 29 |  | CB3 (pin 28) | **A10 / GND (0 Ω)** |
 | VC2 | 31 | **INA240 #2 (right) OUT** | CB2 (pin 30) | **A10 / GND (0 Ω)** |
 | VC1 | 33 | **INA240 #1 (left) OUT** | CB1 (pin 32) | **A10 / GND (0 Ω)** |
-| VC0 | 35 |  | CB0 (pin 34) | **A10 / GND (0 Ω)** |
+| VC0 | 35 | **A10 / GND (0 Ω)** | CB0 (pin 34) | **A10 / GND (0 Ω)** |
 
 Expect BMW to disable the undervoltage comparators on these channels (`UV_DISABLE1/2`, 0x000C–0x000D); look for those writes in the captures.
 
@@ -215,7 +215,7 @@ Expect BMW to disable the undervoltage comparators on these channels (`UV_DISABL
 
 | Device 0 reading | Register | Equals | Meaning |
 |---|---|---|---|
-| Cell 1 | `VCELL1_HI/LO` 0x0586 | VC1 − VC0 | INA240 #1 (left) output, if VC0 is at GND |
+| Cell 1 | `VCELL1_HI/LO` 0x0586 | VC1 − VC0 | INA240 #1 (left) output (VC0 at GND, confirmed) |
 | Cell 2 | `VCELL2_HI/LO` 0x0584 | VC2 − VC1 | INA240 #2 output **minus** INA240 #1 output |
 | Cell 1 + cell 2 | — | VC2 − VC0 | INA240 #2 (right) output |
 
@@ -278,6 +278,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | CB1–CB8 (even pins 18–32) are tied directly to A10 / GND, as is CB0 |
 | | Standard BQ79616 pin numbering confirmed (pins 46 CVSS and 34 CB0 = A10). VC14 (pin 7) and VC11 (pin 13) are tied to the 5 V rail (0 Ω) |
 | | Both INA240A1-Q1s: VS on the 5 V rail, GND on A10 |
+| | BQ79616 pins 34 (CB0), 35 (VC0) and 36 (REFHM) are tied to GND (A10), as expected |
 | | Left INA240 (#1) OUT (pin 5) → BQ79616 pin 33 (VC1) |
 | | Right INA240 (#2) OUT (pin 5) → BQ79616 pin 31 (VC2): current is measured on device 0 cell channel 2 |
 | | The 5 V LDO rail also feeds the HEF4021B. It connects to the BQ79616 too, pin not yet identified (candidates: 45 CVDD, 51 TSREF, 52 RX pull-up, 55–58 GPIO pull-ups, 62 NFAULT pull-up) |
