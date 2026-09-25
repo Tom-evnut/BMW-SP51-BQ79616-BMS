@@ -124,8 +124,8 @@ at the **bottom edge** of the board:
   three groups:
   - **Column 1 (A1, B1):** daisy-chain pair, transformer-isolated.
   - **Columns 3–8 (12 pins):** probably host side (ISO7721 UART, supply, GND) and anything else.
-  - **Column 10 (A10, B10):** isolated from the rest by the empty column. By symmetry with column 1, possibly the
-    **ring-return chain pair (COML)**. Check whether it also goes to a transformer.
+  - **Column 10 (A10, B10):** the **isolated (BQ79616-side) domain**. A10 = BQ-side GND (ISO7721 GND1), confirmed.
+    The empty column 9 is the creepage gap between the host domain (columns 3–8) and the isolated domain.
 
 ### Procedure (unpowered, daughter board removed if possible)
 
@@ -146,14 +146,15 @@ Fill this in with the board unpowered, using resistance mode (series resistors w
 | 1 | VCC1 | BQ | — | | | Expected from BQ79616 CVDD (pin 45) |
 | 2 | OUTA | BQ | — | | | Expected → BQ79616 RX (pin 52) |
 | 3 | INB | BQ | — | | | Expected ← BQ79616 TX (pin 53) |
-| 4 | GND1 | BQ | — | | | BQ-side ground. Use for the isolation check |
+| 4 | GND1 | BQ | **A10** | | | BQ-side (isolated) ground, **brought out on the header** (confirmed) |
 | 5 | GND2 | Header | **A6** | | | Header-side GND (confirmed) |
 | 6 | OUTB | Header | **B7** | | | **Host RX** ← BQ TX (confirmed) |
 | 7 | INA | Header | **A7** | | | **Host TX** → BQ RX (confirmed) |
 | 8 | VCC2 | Header | **A8** | | | Host logic supply (confirmed; voltage to measure) |
 
-Isolation check: resistance from the BQ-side GND to every header pin should read open (> 10 MΩ). Header pins A1/B1
-go through a transformer, so they will also read open.
+Isolation check: resistance from the BQ-side GND (ISO7721 pin 4 / A10) to every header pin **except column 10**
+should read open (> 10 MΩ). This includes A1/B1, which go through a transformer. In particular, **A6 to A10 must be
+open**.
 
 ### Confirmed so far
 
@@ -182,7 +183,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | A7 | Yes | LV / host | Host UART TX (→ BQ79616 RX) | ISO7721 pin 7 (INA) | Idle high | Confirmed. Sniff channel: host → BMS chain |
 | A8 | Yes | LV / host | Host logic supply (ISO7721 VCC2) | ISO7721 pin 8 (VCC2) | 3.3 V or 5 V? (measure) | Confirmed. Supplied by the SME main board |
 | A9 | No | — | | | | Unpopulated (confirmed) |
-| A10 | Yes | | | Transformer? (possible ring return, to check) | | Isolated from columns 3–8 by empty column 9 |
+| A10 | Yes | **Isolated / BQ side** | BQ-side GND (ISO7721 GND1) | ISO7721 pin 4 (GND1) | Reference for the isolated domain | Confirmed. **Never connect to A6 or the analyser GND** |
 | B1 | Yes | Chain (transformer-isolated) | Daisy-chain pair (P/N to confirm) | Isolation transformer → BQ79616 COMH? (to confirm) | | |
 | B2 | No | — | | | | Unpopulated (confirmed) |
 | B3 | Yes | | | | | |
@@ -192,7 +193,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | B7 | Yes | LV / host | Host UART RX (← BQ79616 TX) | ISO7721 pin 6 (OUTB) | Idle high | Confirmed. Sniff channel: BMS chain → host |
 | B8 | Yes | | | | | |
 | B9 | No | — | | | | Unpopulated (confirmed) |
-| B10 | Yes | | | Transformer? (possible ring return, to check) | | Isolated from columns 3–8 by empty column 9 |
+| B10 | Yes | Isolated / BQ side? | Isolated-side supply feed? | ? | ? | Next to BQ GND A10. Trace towards BQ79616 BAT (pin 1) / LDOIN (pin 47) or a regulator |
 
 ## Findings log
 
@@ -201,6 +202,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | BQ79616 found on daughter board, used as base device |
 | | ISO7721-Q1 (`7721Q`) found next to the header |
 | | Header is 20-way with 4 pins missing, which is likely an isolation (creepage) gap |
+| | A10 = ISO7721 pin 4 (GND1): the isolated BQ-side ground is on the header, behind the column-9 gap |
 | | A8 = ISO7721 pin 8 (VCC2): host logic supply from the SME |
 | | B7 = ISO7721 pin 6 (OUTB): host RX |
 | | A7 = ISO7721 pin 7 (INA): host TX |
