@@ -49,6 +49,7 @@ Check the colours against the label or datasheet of your cable before connecting
 | Date | Condition | B10 supply | Current | Notes |
 |---|---|---|---|---|
 | | Isolated side only (A8 unpowered, UART not connected) | 13.26 V | 63 mA | Higher than the ~20–25 mA budget below, so there is an extra load to find |
+| | After WAKE via A7 (TTL-232R-5V, TXD confirmed on A7) | 13.23 V | 62 → 72 mA | **WAKE confirmed**: +10 mA = BQ79616 ACTIVE. No UART reply yet. Current limit must allow the wake-up surge |
 
 Rough current budget on B10:
 
