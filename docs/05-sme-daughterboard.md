@@ -157,6 +157,37 @@ Isolation check: resistance from the BQ-side GND (ISO7721 pin 4 / A10) to every 
 should read open (> 10 MΩ). This includes A1/B1, which go through a transformer. In particular, **A6 to A10 must be
 open**.
 
+### Base BQ79616: cell-input usage
+
+The base BQ79616 has no cells attached, so BMW has wired its VC and CB inputs to other signals. In captures, **device
+0's VCELL readings are pack-level measurements, not cell voltages**. This mapping says what each one measures.
+
+Pin numbering confirmed as standard: anticlockwise from the dot, pin 1 = BAT. Checked by pin 46 (CVSS) and pin 34
+(CB0) both reading 0 Ω to A10.
+
+| VC input | Pin | Connects to | CB input | Connects to |
+|---|---|---|---|---|
+| VC16 | 3 |  | CB16 (pin 2) |  |
+| VC15 | 5 |  | CB15 (pin 4) |  |
+| VC14 | 7 | **5 V rail (0 Ω)** | CB14 (pin 6) |  |
+| VC13 | 9 |  | CB13 (pin 8) |  |
+| VC12 | 11 |  | CB12 (pin 10) |  |
+| VC11 | 13 | **5 V rail (0 Ω)** | CB11 (pin 12) |  |
+| VC10 | 15 |  | CB10 (pin 14) |  |
+| VC9 | 17 |  | CB9 (pin 16) |  |
+| VC8 | 19 |  | CB8 (pin 18) |  |
+| VC7 | 21 |  | CB7 (pin 20) |  |
+| VC6 | 23 |  | CB6 (pin 22) |  |
+| VC5 | 25 |  | CB5 (pin 24) |  |
+| VC4 | 27 |  | CB4 (pin 26) |  |
+| VC3 | 29 |  | CB3 (pin 28) |  |
+| VC2 | 31 |  | CB2 (pin 30) |  |
+| VC1 | 33 |  | CB1 (pin 32) |  |
+| VC0 | 35 |  | CB0 (pin 34) | **A10 / GND (0 Ω)** |
+
+Still to record: what each remaining VC and CB pin connects to (5 V rail, A10, INA240 output, HV divider, a
+resistor/capacitor filter), and where **BAT (pin 1)** is fed from.
+
 ### Confirmed so far
 
 - **A1 + B1 = daisy-chain pair**, through **isolation transformer(s)** on the daughter board. This is most
@@ -203,6 +234,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | BQ79616 found on daughter board, used as base device |
 | | ISO7721-Q1 (`7721Q`) found next to the header |
 | | Header is 20-way with 4 pins missing, which is likely an isolation (creepage) gap |
+| | Standard BQ79616 pin numbering confirmed (pins 46 CVSS and 34 CB0 = A10). VC14 (pin 7) and VC11 (pin 13) are tied to the 5 V rail (0 Ω) |
 | | The 5 V LDO rail also feeds the HEF4021B. It connects to the BQ79616 too, pin not yet identified (candidates: 45 CVDD, 51 TSREF, 52 RX pull-up, 55–58 GPIO pull-ups, 62 NFAULT pull-up) |
 | | TPS7A6650-Q1 5 V output (large SMD capacitors) feeds ISO7721 pin 1 (VCC1): the BQ side of the isolator runs at 5 V |
 | | B10 goes directly to TPS7A6650-Q1 pins 1 (VIN) and 2 (EN): B10/A10 is the isolated domain's power input from the SME main board |
