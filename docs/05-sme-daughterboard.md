@@ -5,6 +5,45 @@ The BMW SME carries a daughter board with:
 - A **TI BQ79616-Q1**, used as the daisy-chain **base device** (UART host interface).
 - A **TI ISO7721-Q1** digital isolator next to the header. Marking: `7721Q` / `47T` / `ARE JG4`.
 
+## Identified components (from photos)
+
+| Marking | Package | Part | Confidence | Role (hypothesis) |
+|---|---|---|---|---|
+| `BQ79616 46ATP6W G4` | HTQFP-64 | TI BQ79616-Q1 | Confirmed | Chain base device, plus pack-level measurements on its GPIO/ADC inputs |
+| `7721Q 47T ARE JG4` | SOIC-8 | TI ISO7721-Q1 | Confirmed | Isolates the host UART (TX/RX) |
+| `240A1Q` (×2) | SOIC-8 | TI INA240A1-Q1 current-sense amplifier (gain 20 V/V) | High | Pack current from a shunt, fed into the BQ79616 GPIO ADC |
+| `HC595` | TSSOP-16 | 74HC595 serial-in / parallel-out shift register | High | Digital **outputs**, probably driven by the BQ79616 SPI controller |
+| `HEF4021BT` | SOIC-16 | Nexperia HEF4021B parallel-in / serial-out shift register | High | Digital **inputs**, read by the BQ79616 SPI controller |
+| `BYG23M` | SMA | Vishay BYG23M, ~1 kV-class rectifier | Medium (check rating) | HV network |
+| `3303` | 1206 resistors | 330 kΩ | High | HV divider / insulation-measurement resistor strings |
+| ST logo, DPAK (several, some under grey silicone) | DPAK | ST, unidentified | — | Likely HV MOSFETs switching the measurement network |
+| onsemi `RXB BH-16`(?) | SOT-223 | Unidentified | — | Probably a regulator |
+| Würth `20059 V1` | SMD magnetic | Würth, unidentified | — | Transformer or choke |
+| `GF 820 EZR` (×3, rear) | Radial can | ~820 µF capacitor | Medium | Bulk capacitance for a switching supply |
+| Beige 2-way connector | — | — | — | Possibly the daisy-chain pair to module 1, or a sensor |
+
+### Interpretation
+
+This looks like more than a UART bridge. It resembles a **pack monitor**, similar in function to TI's BQ79631-Q1:
+
+- Current measured by INA240s from a shunt.
+- HV voltage and/or insulation-resistance measurement using 330 kΩ strings, 1 kV diodes and HV MOSFETs.
+- Switching and status handled by shift registers on the BQ79616's SPI controller.
+  - BQ79616 GPIO4 (pin 58) = SS, GPIO5 (57) = MISO, GPIO6 (56) = MOSI, GPIO7 (55) = SCLK, enabled by
+    `GPIO_CONF1[SPI_EN]`. Registers: `SPI_CONF` 0x34D, `SPI_EXE` 0x351.
+
+**Consequence:** the BQ79616 side is very likely **referenced to the HV pack**. Only probe the header side of the ISO7721.
+If this holds, the whole board could be reused as a pack monitor and chain bridge for the new master.
+
+### Header layout (from photos, to confirm)
+
+- 2-row, 20-way.
+- One row lands on top-side pads (about 10 positions); the ISO7721 host-side traces run to this row.
+- The other row is through-hole, with only **6 fitted: position 1, positions 4–7, position 10**.
+- The 4 missing pins flank the central group of 4, which points to a creepage gap around those 4 pins. They may
+  carry HV sense lines from the SME main board. Check each with an ohmmeter: readings in the MΩ range into the
+  330 kΩ strings mean HV.
+
 ## ISO7721-Q1
 
 - A dual-channel digital isolator, with one channel in each direction.
@@ -118,3 +157,4 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | BQ79616 found on daughter board, used as base device |
 | | ISO7721-Q1 (`7721Q`) found next to the header |
 | | Header is 20-way with 4 pins missing, which is likely an isolation (creepage) gap |
+| | Photos: INA240A1-Q1 ×2, 74HC595, HEF4021B and a HV network (BYG23M, 330 kΩ strings, ST DPAKs) point to a pack-monitor function |
