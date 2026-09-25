@@ -144,7 +144,7 @@ Fill this in with the board unpowered, using resistance mode (series resistors w
 
 | ISO7721 pin | Name | Side (header / BQ) | Header pin(s) | Resistance | Via (series R, etc.) | Notes |
 |---|---|---|---|---|---|---|
-| 1 | VCC1 | BQ | — | | | Expected from BQ79616 CVDD (pin 45) |
+| 1 | VCC1 | BQ | — (via LDO from B10) | | | Powered from the TPS7A6650-Q1 5 V output (large SMD capacitors on the rail), **not** BQ79616 CVDD (confirmed) |
 | 2 | OUTA | BQ | — | | | Expected → BQ79616 RX (pin 52) |
 | 3 | INB | BQ | — | | | Expected ← BQ79616 TX (pin 53) |
 | 4 | GND1 | BQ | **A10** | | | BQ-side (isolated) ground, **brought out on the header** (confirmed) |
@@ -203,6 +203,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | BQ79616 found on daughter board, used as base device |
 | | ISO7721-Q1 (`7721Q`) found next to the header |
 | | Header is 20-way with 4 pins missing, which is likely an isolation (creepage) gap |
+| | TPS7A6650-Q1 5 V output (large SMD capacitors) feeds ISO7721 pin 1 (VCC1): the BQ side of the isolator runs at 5 V |
 | | B10 goes directly to TPS7A6650-Q1 pins 1 (VIN) and 2 (EN): B10/A10 is the isolated domain's power input from the SME main board |
 | | B10 to A10 = 1.2 kΩ unpowered, the same in both polarities (resistive path; diodes may not conduct at the meter's test voltage) |
 | | B10 connects to the rear-side TI `46 PA1Q` = TPS7A6650-Q1 5 V LDO: B10 is the isolated domain's supply input |
