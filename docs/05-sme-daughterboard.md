@@ -169,13 +169,13 @@ SOIC-8 pinout (datasheet SBOS808E):
 | 3 | REF2 | 6 | VS (2.7–5.5 V) |
 | 4 | NC | 5 | OUT |
 
-| | INA240 #1 (`AEDJ`) | INA240 #2 (`AEDE`) |
+| | INA240 #1, left (`AEDJ`) | INA240 #2, right (`AEDE`) |
 |---|---|---|
 | VS (6) | 5 V rail (confirmed) | 5 V rail (confirmed) |
 | GND (2) | A10 (confirmed) | A10 (confirmed) |
 | IN+ (8) / IN− (1) | ? (trace to the shunt connection) | ? |
 | REF1 (7) / REF2 (3) | ? (GND, 5 V, or split for 2.5 V bidirectional mid-point) | ? |
-| OUT (5) | ? (to a BQ79616 VC or GPIO pin) | ? |
+| OUT (5) | ? (to a BQ79616 VC or GPIO pin) | **BQ79616 pin 31 = VC2** (confirmed) |
 
 The INA240 input common-mode range is −4 V to 80 V **relative to its GND (A10)**. The shunt must therefore sit close to
 the isolated ground's potential. This suggests the **isolated domain is referenced to pack negative (HV−)**, with a
@@ -205,11 +205,13 @@ Pin numbering confirmed as standard: anticlockwise from the dot, pin 1 = BAT. Ch
 | VC5 | 25 |  | CB5 (pin 24) | **A10 / GND (0 Ω)** |
 | VC4 | 27 |  | CB4 (pin 26) | **A10 / GND (0 Ω)** |
 | VC3 | 29 |  | CB3 (pin 28) | **A10 / GND (0 Ω)** |
-| VC2 | 31 |  | CB2 (pin 30) | **A10 / GND (0 Ω)** |
+| VC2 | 31 | **INA240 #2 (right) OUT** | CB2 (pin 30) | **A10 / GND (0 Ω)** |
 | VC1 | 33 |  | CB1 (pin 32) | **A10 / GND (0 Ω)** |
 | VC0 | 35 |  | CB0 (pin 34) | **A10 / GND (0 Ω)** |
 
 Expect BMW to disable the undervoltage comparators on these channels (`UV_DISABLE1/2`, 0x000C–0x000D); look for those writes in the captures.
+
+**Pack current (INA240 #2) appears as device 0 "cell 2"** = VC2 − VC1, read from `VCELL2_HI/LO` (0x0584). If VC1 is grounded, that reading is simply the INA240 output voltage.
 
 Still to record: what each remaining VC and CB pin connects to (5 V rail, A10, INA240 output, HV divider, a
 resistor/capacitor filter), and the BQ79616's external NPN pre-regulator (BAT → collector, NPNB pin 48 → base, LDOIN pin 47 → emitter). This is the onsemi BCP56-16 (SOT-223) closest to the HEF4021B (confirmed).
@@ -267,6 +269,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | CB1–CB8 (even pins 18–32) are tied directly to A10 / GND, as is CB0 |
 | | Standard BQ79616 pin numbering confirmed (pins 46 CVSS and 34 CB0 = A10). VC14 (pin 7) and VC11 (pin 13) are tied to the 5 V rail (0 Ω) |
 | | Both INA240A1-Q1s: VS on the 5 V rail, GND on A10 |
+| | Right INA240 (#2) OUT (pin 5) → BQ79616 pin 31 (VC2): current is measured on device 0 cell channel 2 |
 | | The 5 V LDO rail also feeds the HEF4021B. It connects to the BQ79616 too, pin not yet identified (candidates: 45 CVDD, 51 TSREF, 52 RX pull-up, 55–58 GPIO pull-ups, 62 NFAULT pull-up) |
 | | TPS7A6650-Q1 5 V output (large SMD capacitors) feeds ISO7721 pin 1 (VCC1): the BQ side of the isolator runs at 5 V |
 | | B10 goes directly to TPS7A6650-Q1 pins 1 (VIN) and 2 (EN): B10/A10 is the isolated domain's power input from the SME main board |
