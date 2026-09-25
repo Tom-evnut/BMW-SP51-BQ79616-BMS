@@ -158,6 +158,29 @@ Isolation check: resistance from the BQ-side GND (ISO7721 pin 4 / A10) to every 
 should read open (> 10 MΩ). This includes A1/B1, which go through a transformer. In particular, **A6 to A10 must be
 open**.
 
+### INA240A1-Q1 current-sense amplifiers (×2)
+
+SOIC-8 pinout (datasheet SBOS808E):
+
+| Pin | Name | Pin | Name |
+|---|---|---|---|
+| 1 | IN− (load side of shunt) | 8 | IN+ (supply side of shunt) |
+| 2 | GND | 7 | REF1 |
+| 3 | REF2 | 6 | VS (2.7–5.5 V) |
+| 4 | NC | 5 | OUT |
+
+| | INA240 #1 (`AEDJ`) | INA240 #2 (`AEDE`) |
+|---|---|---|
+| VS (6) | 5 V rail (confirmed) | 5 V rail (confirmed) |
+| GND (2) | A10 (confirmed) | A10 (confirmed) |
+| IN+ (8) / IN− (1) | ? (trace to the shunt connection) | ? |
+| REF1 (7) / REF2 (3) | ? (GND, 5 V, or split for 2.5 V bidirectional mid-point) | ? |
+| OUT (5) | ? (to a BQ79616 VC or GPIO pin) | ? |
+
+The INA240 input common-mode range is −4 V to 80 V **relative to its GND (A10)**. The shunt must therefore sit close to
+the isolated ground's potential. This suggests the **isolated domain is referenced to pack negative (HV−)**, with a
+shunt in the HV− path.
+
 ### Base BQ79616: cell-input usage
 
 The base BQ79616 has no cells attached, so BMW has wired its VC and CB inputs to other signals. In captures, **device
@@ -243,6 +266,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | BQ79616 BAT (pin 1) reads about 30 Ω to B10: the isolated supply powers the BQ79616 directly, so it must be 9–40 V (probably about 12 V) |
 | | CB1–CB8 (even pins 18–32) are tied directly to A10 / GND, as is CB0 |
 | | Standard BQ79616 pin numbering confirmed (pins 46 CVSS and 34 CB0 = A10). VC14 (pin 7) and VC11 (pin 13) are tied to the 5 V rail (0 Ω) |
+| | Both INA240A1-Q1s: VS on the 5 V rail, GND on A10 |
 | | The 5 V LDO rail also feeds the HEF4021B. It connects to the BQ79616 too, pin not yet identified (candidates: 45 CVDD, 51 TSREF, 52 RX pull-up, 55–58 GPIO pull-ups, 62 NFAULT pull-up) |
 | | TPS7A6650-Q1 5 V output (large SMD capacitors) feeds ISO7721 pin 1 (VCC1): the BQ side of the isolator runs at 5 V |
 | | B10 goes directly to TPS7A6650-Q1 pins 1 (VIN) and 2 (EN): B10/A10 is the isolated domain's power input from the SME main board |
