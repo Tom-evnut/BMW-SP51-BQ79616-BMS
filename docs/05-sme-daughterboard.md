@@ -203,6 +203,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | BQ79616 found on daughter board, used as base device |
 | | ISO7721-Q1 (`7721Q`) found next to the header |
 | | Header is 20-way with 4 pins missing, which is likely an isolation (creepage) gap |
+| | The 5 V LDO rail also feeds the HEF4021B. It connects to the BQ79616 too, pin not yet identified (candidates: 45 CVDD, 51 TSREF, 52 RX pull-up, 55–58 GPIO pull-ups, 62 NFAULT pull-up) |
 | | TPS7A6650-Q1 5 V output (large SMD capacitors) feeds ISO7721 pin 1 (VCC1): the BQ side of the isolator runs at 5 V |
 | | B10 goes directly to TPS7A6650-Q1 pins 1 (VIN) and 2 (EN): B10/A10 is the isolated domain's power input from the SME main board |
 | | B10 to A10 = 1.2 kΩ unpowered, the same in both polarities (resistive path; diodes may not conduct at the meter's test voltage) |
