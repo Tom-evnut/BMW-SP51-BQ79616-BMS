@@ -150,7 +150,7 @@ Fill this in with the board unpowered, using resistance mode (series resistors w
 | 5 | GND2 | Header | **A6** | | | Header-side GND (confirmed) |
 | 6 | OUTB | Header | **B7** | | | **Host RX** ← BQ TX (confirmed) |
 | 7 | INA | Header | **A7** | | | **Host TX** → BQ RX (confirmed) |
-| 8 | VCC2 | Header | | | | Host logic supply |
+| 8 | VCC2 | Header | **A8** | | | Host logic supply (confirmed; voltage to measure) |
 
 Isolation check: resistance from the BQ-side GND to every header pin should read open (> 10 MΩ). Header pins A1/B1
 go through a transformer, so they will also read open.
@@ -180,7 +180,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | A5 | Yes |  |  |  | | |
 | A6 | Yes | LV / host | GND (host side) | ISO7721 pin 5 (GND2) | 0 V | Confirmed |
 | A7 | Yes | LV / host | Host UART TX (→ BQ79616 RX) | ISO7721 pin 7 (INA) | Idle high | Confirmed. Sniff channel: host → BMS chain |
-| A8 | Yes |  |  |  | | |
+| A8 | Yes | LV / host | Host logic supply (ISO7721 VCC2) | ISO7721 pin 8 (VCC2) | 3.3 V or 5 V? (measure) | Confirmed. Supplied by the SME main board |
 | A9 | No | — | | | | Unpopulated (confirmed) |
 | A10 | Yes | | | Transformer? (possible ring return, to check) | | Isolated from columns 3–8 by empty column 9 |
 | B1 | Yes | Chain (transformer-isolated) | Daisy-chain pair (P/N to confirm) | Isolation transformer → BQ79616 COMH? (to confirm) | | |
@@ -201,6 +201,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | BQ79616 found on daughter board, used as base device |
 | | ISO7721-Q1 (`7721Q`) found next to the header |
 | | Header is 20-way with 4 pins missing, which is likely an isolation (creepage) gap |
+| | A8 = ISO7721 pin 8 (VCC2): host logic supply from the SME |
 | | B7 = ISO7721 pin 6 (OUTB): host RX |
 | | A7 = ISO7721 pin 7 (INA): host TX |
 | | A6 = ISO7721 pin 5 (GND2): the header faces ISO7721 side 2 (pins 5–8) |

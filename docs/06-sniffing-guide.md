@@ -24,6 +24,7 @@ Pin numbering is described in [05-sme-daughterboard.md](05-sme-daughterboard.md)
 | **A6** | Host-side GND (ISO7721 GND2) | Analyser GND |
 | **A7** | Host TX → BQ79616 RX (ISO7721 INA) | CH0 |
 | **B7** | Host RX ← BQ79616 TX (ISO7721 OUTB) | CH1 |
+| **A8** | Host logic supply (ISO7721 VCC2) | Measure with a DMM; sets the analyser logic threshold |
 
 ## Logic analyser settings
 
