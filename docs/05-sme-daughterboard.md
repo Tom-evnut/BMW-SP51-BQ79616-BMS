@@ -143,14 +143,14 @@ Fill this in with the board unpowered, using resistance mode (series resistors w
 
 | ISO7721 pin | Name | Side (header / BQ) | Header pin(s) | Resistance | Via (series R, etc.) | Notes |
 |---|---|---|---|---|---|---|
-| 1 | VCC1 | | | | | |
-| 2 | OUTA | | | | | |
-| 3 | INB | | | | | |
-| 4 | GND1 | | | | | |
-| 5 | GND2 | | | | | |
-| 6 | OUTB | | | | | |
-| 7 | INA | | | | | |
-| 8 | VCC2 | | | | | |
+| 1 | VCC1 | BQ | — | | | Expected from BQ79616 CVDD (pin 45) |
+| 2 | OUTA | BQ | — | | | Expected → BQ79616 RX (pin 52) |
+| 3 | INB | BQ | — | | | Expected ← BQ79616 TX (pin 53) |
+| 4 | GND1 | BQ | — | | | BQ-side ground. Use for the isolation check |
+| 5 | GND2 | Header | **A6** | | | Header-side GND (confirmed) |
+| 6 | OUTB | Header | | | | **Host RX** ← BQ TX |
+| 7 | INA | Header | | | | **Host TX** → BQ RX |
+| 8 | VCC2 | Header | | | | Host logic supply |
 
 Isolation check: resistance from the BQ-side GND to every header pin should read open (> 10 MΩ). Header pins A1/B1
 go through a transformer, so they will also read open.
@@ -178,7 +178,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | A3 | Yes |  |  |  | | |
 | A4 | Yes |  |  |  | | |
 | A5 | Yes |  |  |  | | |
-| A6 | Yes |  |  |  | | |
+| A6 | Yes | LV / host | GND (host side) | ISO7721 pin 5 (GND2) | 0 V | Confirmed |
 | A7 | Yes |  |  |  | | |
 | A8 | Yes |  |  |  | | |
 | A9 | No | — | | | | Unpopulated (confirmed) |
@@ -201,6 +201,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | BQ79616 found on daughter board, used as base device |
 | | ISO7721-Q1 (`7721Q`) found next to the header |
 | | Header is 20-way with 4 pins missing, which is likely an isolation (creepage) gap |
+| | A6 = ISO7721 pin 5 (GND2): the header faces ISO7721 side 2 (pins 5–8) |
 | | A2, B2, A9, B9 unpopulated: columns 2 and 9 are empty, so columns 1 and 10 are separated from the middle |
 | | A1 + B1 (left column) go through isolation transformers: this is the daisy-chain pair to the modules |
 | | Photos: INA240A1-Q1 ×2, 74HC595, HEF4021B and a HV network (BYG23M, 330 kΩ strings, ST DPAKs) point to a pack-monitor function |
