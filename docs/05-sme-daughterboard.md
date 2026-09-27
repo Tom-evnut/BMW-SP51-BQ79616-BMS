@@ -311,6 +311,8 @@ open**.
 > - Don't write the BQ79616 GPIO / SPI-controller registers (`GPIO_CONF*`, `SPI_CONF` 0x34D, `SPI_TX*`, `SPI_EXE` 0x351).
 >   `bq_uart.py` currently doesn't touch them.
 > - The extra ~40 mA idle current on B10 could be a converter charging those capacitors.
+> - The rear capacitor bank (≈0.2 J at 13 V) powers the comparators and probably the firing circuit. **Measure and
+>   discharge it before handling the board after power-off.**
 
 ### LM2901AV quad comparator (rear of the board)
 
@@ -326,11 +328,23 @@ Pinout (14-pin D/PW, datasheet SLCS006Z):
 | 6 | 1IN− | 9 | 3IN+ |
 | 7 | 1IN+ | 8 | 3IN− |
 
+**There are two LM2901AV comparators on the rear (8 channels in total).** Confirmed:
+
+- **GND (pin 12) = A10** (isolated ground).
+- **VCC (pin 3) is fed from the three large ~820 µF capacitors on the rear.** Those capacitors form a local
+  **energy-reserve rail**. Together with the NJT4030P high-side switches, this looks like a classic airbag/pyro-style
+  design: the reserve keeps the detection and firing circuit alive for a while even if the B10 supply is lost, for
+  example in a crash. Stored energy: ½ × 2.46 mF × (13 V)² ≈ 0.2 J at 13 V, **enough to fire an igniter**.
+
 The outputs are **open-collector**, so each needs a pull-up; the pull-up rail shows the logic domain. To trace:
 
 | Check | Why |
 |---|---|
-| VCC (3): 5 V rail or B10? | Supply domain |
+| ~~VCC (3)~~ | Confirmed: from the rear capacitor bank (energy reserve) |
+| Capacitor-bank voltage (powered, battery DMM vs A10) | ≈ B10 − diode drop = diode-fed reserve; higher than B10 = boost converter (the rear power magnetic) |
+| Charge path B10 → capacitors | Diode/resistor, or through the power magnetic |
+| NJT4030P emitters (pin 3) → capacitor bank? | Whether the reserve is also the firing energy |
+| Capacitor voltage decay after power-off | How long the reserve holds up, and how long to wait before handling |
 | Each OUT (1, 2, 13, 14) → HEF4021B D1–D7, BQ79616 GPIO, NJT4030P base driver, or a MOSFET gate? | Status bits read over SPI, or direct hardware action (for example a firing or HV-switch interlock) |
 | Each IN+/IN− pair → INA240 output, HV divider or 330 kΩ string, pyro line, or a reference divider? | What is being thresholded |
 
@@ -467,7 +481,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | B7 = ISO7721 pin 6 (OUTB): host RX |
 | | A7 = ISO7721 pin 7 (INA): host TX |
 | | A6 = ISO7721 pin 5 (GND2): the header faces ISO7721 side 2 (pins 5–8) |
-| | Rear analogue circuitry uses a TI LM2901AV quad comparator (marking `2901AV`) |
+| | Rear analogue circuitry: **two** TI LM2901AV quad comparators. GND = A10; VCC fed from the 3 × ~820 µF rear capacitor bank (an energy-reserve rail) |
 | | White 2-way connector goes to the pyro fuse. One pin is isolated GND (via HEF4021B pins 7/8; D0 tied low). The other pin goes to two onsemi NJT4030P PNP transistors: a high-side firing switch |
 | | Header identified as IRISO 10120 series (2.0 mm pitch Z-Move floating board-to-board, 125 V rating): a socket derived from **IMSA-10120S-20Y915** (12.35 mm tall). The mating plug IMSA-10120B-20 is on the SME main board |
 | | A2, B2, A9, B9 unpopulated: columns 2 and 9 are empty, so columns 1 and 10 are separated from the middle |
