@@ -42,7 +42,8 @@ An STM32H5 is the alternative if more headroom or security features are wanted.
 - The daughter board carries an **IRISO IMSA-10120S-20Y915-derived socket** (2.0 mm pitch, floating Z-Move
   board-to-board, 12.35 mm tall). The master needs the mating **IMSA-10120B-20…** plug (drawing 110-410120-847).
 - Match the original mated height (11–20 mm range, set by the plug/socket variant pair). Measure it on the SME.
-  Plug options: 7.95 mm (Y911 / Z02–Z03) or 8.95 mm (Y913) tall.
+  **Use the 7.95 mm plug (IMSA-10120B-20Y911 / -20Z02-GFN4, drawing 110-410120-847) with a board spacing of ~19.0 mm.**
+  On the SME, the boards measure ~19.2 mm apart when mated, which matches that plug with the 12.35 mm socket.
 - Fix the two boards together with screws or standoffs near the connector. IRISO says not to rely on the connector alone.
 - Keep columns 2 and 9 unused. They provide the creepage gap between the host and isolated domains, since the
   connector itself is only rated 125 V.

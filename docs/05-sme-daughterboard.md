@@ -122,6 +122,18 @@ board**, and on a replacement master or bench breakout.
 | Contacts | Gold, 0.1 µm min |
 | Rating | 125 V, 1 A, 50 mΩ max |
 | Mates with | IMSA-10120B-20… plug (e.g. Y911 / Z02–Z03: 7.95 mm tall; Y913: 8.95 mm tall) |
+| **Measured on the SME** | **Boards ~19.2 mm apart when mated** |
+
+**Which plug the SME uses (derived):** the series' mated-height range tops out at 20.0 mm. With the 12.35 mm socket:
+
+| Plug | Socket + plug | Nominal mated height (1.3 mm engagement) |
+|---|---|---|
+| 8.95 mm (Y913) | 21.30 mm | 20.0 mm (the series maximum) |
+| **7.95 mm (Y911 / Z02–Z03)** | 20.30 mm | **19.0 mm**, which matches the measured 19.2 mm |
+
+So the SME main board almost certainly has the **7.95 mm IMSA-10120B-20 plug**, which is the part on drawing 110-410120-847.
+The +0.2 mm difference is within the connector's Z float (±0.7 mm) and measurement tolerance. The 1.3 mm engagement
+is inferred from the series' 20.0 mm maximum; confirm it against IRISO's socket drawing if possible.
 
 Series data from IRISO's 10120 series sheet, the product pages and specification IS-10120-003:
 
