@@ -258,6 +258,46 @@ Isolation check: resistance from the BQ-side GND (ISO7721 pin 4 / A10) to every 
 should read open (> 10 MΩ). This includes A1/B1, which go through a transformer. In particular, **A6 to A10 must be
 open**.
 
+### Pyro fuse connector and HEF4021B inputs
+
+- The small **white 2-way connector** on the daughter board goes to the **pack's pyro fuse** (pyrotechnic disconnect).
+- One of its pins connects to the **HEF4021B**, which is probably a pyro status or continuity input read through the
+  BQ79616 SPI controller.
+
+**HEF4021B pinout** (SO16, Nexperia datasheet rev 12):
+
+| Pin | Name | Function | Pin | Name | Function |
+|---|---|---|---|---|---|
+| 1 | D7 | Parallel input 7 | 16 | VDD | Supply (5 V rail) |
+| 2 | Q5 | Output, stage 6 | 15 | D6 | Parallel input 6 |
+| 3 | **Q7** | **Serial output (last stage)** | 14 | D5 | Parallel input 5 |
+| 4 | D3 | Parallel input 3 | 13 | D4 | Parallel input 4 |
+| 5 | D2 | Parallel input 2 | 12 | Q6 | Output, stage 7 |
+| 6 | D1 | Parallel input 1 | 11 | DS | Serial data input |
+| 7 | D0 | Parallel input 0 | 10 | CP | Clock (rising edge) |
+| 8 | VSS | Ground (A10) | 9 | PL | Parallel load (HIGH = load D0–D7) |
+
+- After a parallel load, Q7 presents D7 first, then D6 … D0 on each clock. Read MSB-first, **bit n of the byte = Dn**,
+  if the BQ79616 SPI controller clocks MSB-first.
+- Expected wiring to the BQ79616 SPI controller: CP ← GPIO7 (pin 55, SCLK), Q7 → GPIO5 (pin 57, MISO),
+  PL ← GPIO4 (pin 58, SS) or another GPIO. DS may be chained from the 74HC595 or tied off.
+
+| HEF4021B pin | Connects to | Notes |
+|---|---|---|
+| Pyro connector pin → D? | | Pin number to confirm |
+| 3 (Q7) | | Expect BQ79616 pin 57 (GPIO5) |
+| 9 (PL) | | Expect BQ79616 pin 58 (GPIO4) |
+| 10 (CP) | | Expect BQ79616 pin 55 (GPIO7) |
+| 11 (DS) | | |
+
+> ⚠ **Possible pyro firing circuit.** The rear of the board has three ~820 µF capacitors, a power magnetic, and ST DPAK
+> MOSFETs under silicone. Together with a 74HC595 output register and the pyro connector, that suggests the board may
+> not just monitor the pyro fuse but also **fire** it. Until the circuit is traced:
+> - Never connect a real pyro fuse or squib to this board on the bench.
+> - Don't write the BQ79616 GPIO / SPI-controller registers (`GPIO_CONF*`, `SPI_CONF` 0x34D, `SPI_TX*`, `SPI_EXE` 0x351).
+>   `bq_uart.py` currently doesn't touch them.
+> - The extra ~40 mA idle current on B10 could be a converter charging those capacitors.
+
 ### INA240A1-Q1 current-sense amplifiers (×2)
 
 SOIC-8 pinout (datasheet SBOS808E):
@@ -391,6 +431,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | B7 = ISO7721 pin 6 (OUTB): host RX |
 | | A7 = ISO7721 pin 7 (INA): host TX |
 | | A6 = ISO7721 pin 5 (GND2): the header faces ISO7721 side 2 (pins 5–8) |
+| | White 2-way connector goes to the pyro fuse; one pin connects to the HEF4021B (a D input, pin to confirm) |
 | | Header identified as IRISO 10120 series (2.0 mm pitch Z-Move floating board-to-board, 125 V rating): a socket derived from **IMSA-10120S-20Y915** (12.35 mm tall). The mating plug IMSA-10120B-20 is on the SME main board |
 | | A2, B2, A9, B9 unpopulated: columns 2 and 9 are empty, so columns 1 and 10 are separated from the middle |
 | | A1 + B1 (left column) go through isolation transformers: this is the daisy-chain pair to the modules |
