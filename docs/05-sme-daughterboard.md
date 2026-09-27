@@ -140,6 +140,9 @@ Series data from IRISO's 10120 series sheet, the product pages and specification
   or pin-1 mark; the only markings are the `IRS` logo, a `*` mark on one long side of the insulator and a `B**` lot
   code. **The A/B convention below is the project's official numbering.**
 
+> The original IRISO drawing 110-410120-847 and specification IS-10120-003 are proprietary, so they are not in this
+> repo. They're kept in the owner's private companion repository.
+
 #### Mating plug: IMSA-10120B-20Z02/Z03-GFN4 (drawing 110-410120-847 rev 5)
 
 This is the part the SME main board, a replacement master or a bench breakout needs in order to mate with the daughter board.
