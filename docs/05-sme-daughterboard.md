@@ -39,7 +39,8 @@ If this holds, the whole board could be reused as a pack monitor and chain bridg
 
 ### Header layout (from photos, to confirm)
 
-- 2 rows of 10: row A on top-side surface-mount pads, row B through-hole. See the pin numbering convention below.
+- 2 rows of 10, **both surface-mount**. Row A's tails exit towards the board centre (ISO7721 side) and row B's towards
+  the board edge. The holes seen below the connector in the photos are vias, not connector pins.
 - Columns 2 and 9 are unpopulated (A2, B2, A9, B9), forming gaps around column 1 and column 10.
 
 ## ISO7721-Q1
@@ -118,13 +119,43 @@ The header is an **IRISO IMSA-10120B** plug (20-way family). Series data from IR
 | Pitch / rows | 2.00 mm, 2 rows (20-way = 2 × 10) |
 | Parts | **IMSA-10120B-…** = plug (male, centre-strip contacts). **IMSA-10120S-…** = socket (female) |
 | Rating | 1 A per contact, 125 V AC/DC, 500 V AC withstand, −40 to +125 °C |
-| Floating range | X/Y ±0.65 mm, Z ±0.8 mm |
+| Floating range | X/Y ±0.65 mm, Z ±0.7 mm (spec IS-10120-003; the brochure says ±0.8 mm) |
 | Mated height | 11.0–20.0 mm, depending on the plug/socket variant pair (plugs Z02–Z05, sockets Z10/Z11 or Z18/Z19; odd numbers = without locating boss) |
 
 - The **125 V rating** is well below the pack voltage. This supports the empty columns 2 and 9 being a **creepage gap**
   between the host domain and the isolated domain, which is HV-referenced in the car.
-- The official pin numbering is on IRISO's drawing (login required). Until it's confirmed, keep using the A/B
-  convention below.
+- **IRISO does not number the contacts.** Drawing 110-410120-847 (IMSA-10120B-**Z**-GFN4, Z02/Z03) has no pin numbers
+  or pin-1 mark; the only markings are the `IRS` logo, a `*` mark on one long side of the insulator and a `B**` lot
+  code. **The A/B convention below is the project's official numbering.**
+
+#### IMSA-10120B-20Z02/Z03-GFN4 plug (drawing 110-410120-847 rev 5)
+
+| Item | Value |
+|---|---|
+| Plug height | 7.95 mm |
+| Dimensions (20-way) | A (first to last contact) = 18.0 mm, B (boss to boss) = 25.7 mm, C (body length) = 28.7 mm, D (hold-downs) = 26.85 mm; width (13) mm |
+| Terminals | Both rows SMT, 2.0 mm pitch, on opposite long sides of the body |
+| Recommended PCB pads | 1.0 × 2.6 mm signal pads at 2.0 mm pitch; 2.2 mm wide hold-down pads; Ø1.2 (+0.1/0) mm boss holes (Z02 = with boss, Z03 = without); row pads 14 mm outside-to-outside |
+| Materials | PA9T black insulator; Corson bronze contacts; Au 0.12 µm min on the contact area, Ni underplate; Sn 2–7 µm on the tails |
+| Coplanarity | 0.1 mm max |
+
+#### Product specification IS-10120-003 (10120S/B series)
+
+| Item | Value |
+|---|---|
+| Parts covered | Socket IMSA-10120S-**(Z10–Z19)-GFN4 (back-surface-reflow capable); plug IMSA-10120B-**(Z02–Z05)-GFN4 |
+| Rating | 125 V AC/DC (IEC 60664-1, material group I, pollution degree 2), 1 A per contact, −40 to +125 °C |
+| Contact resistance | 50 mΩ max, initial and after every test |
+| Insulation resistance | 100 MΩ min at 250 V DC |
+| Dielectric withstand | 500 V AC for 60 s |
+| Temperature rise | ≤ 30 °C at 1 A |
+| Leakage current | 50 µA max at 14 V DC |
+| Insertion / extraction force | ≤ 2.0 N / ≥ 0.1 N per terminal |
+| Durability | 30 mating cycles |
+| Shock / vibration | 490 m/s², 11 ms; 10–2000 Hz, 98 m/s², 2 h per axis; Z-move ±20 µm × 10⁷ cycles, no discontinuity > 1 µs |
+| Reflow | Peak 260 °C max; hand soldering 350 °C, 3 s |
+| Handling | Mate straight (≤ 1° mating angle, ≤ 3° guiding angle); don't hold the boards by the connector alone, fix them with screws near the connector |
+
 - The plug uses centre-strip contacts, so generic 2 mm female jumper leads won't mate reliably. For bench work,
   use a matching **IMSA-10120S-20…** socket on a small breakout board.
 - To pick the right socket for a replacement master, measure the stack height between the SME main board and the
@@ -137,8 +168,8 @@ at the **bottom edge** of the board:
 
 ```
             (board centre / ISO7721 above)
-   A1  A2  A3  A4  A5  A6  A7  A8  A9  A10   ← Row A: surface-mount pads, board side
-   B1  B2  B3  B4  B5  B6  B7  B8  B9  B10   ← Row B: through-hole, board edge side
+   A1  A2  A3  A4  A5  A6  A7  A8  A9  A10   ← Row A: tails towards the board centre / ISO7721
+   B1  B2  B3  B4  B5  B6  B7  B8  B9  B10   ← Row B: tails towards the board edge
             (board edge below)
 ```
 
