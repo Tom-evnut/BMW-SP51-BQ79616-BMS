@@ -122,18 +122,27 @@ board**, and on a replacement master or bench breakout.
 | Contacts | Gold, 0.1 µm min |
 | Rating | 125 V, 1 A, 50 mΩ max |
 | Mates with | IMSA-10120B-20… plug (e.g. Y911 / Z02–Z03: 7.95 mm tall; Y913: 8.95 mm tall) |
-| **Measured on the SME** | **Boards ~19.2 mm apart when mated** |
+| **Measured on the SME** | **Boards ~19.2 mm apart when mated; SME plug ~8.5 mm tall** |
 
-**Which plug the SME uses (derived):** the series' mated-height range tops out at 20.0 mm. With the 12.35 mm socket:
+**Connector stack analysis.** Heights from IRISO listings:
 
-| Plug | Socket + plug | Nominal mated height (1.3 mm engagement) |
+| Part | Heights |
+|---|---|
+| 10120B plug | 7.95 mm (Y911), 8.95 mm (Y913); Y915 height not listed |
+| 10120S socket | 8.35 mm (Y911), 12.35 mm (Y915), 14.35 mm (Y502), 16.35 mm (Y504) |
+
+The series' mated-height range is 11.0–20.0 mm. The shortest pair (8.35 + 7.95 − 11.0) and the tallest pair
+(16.35 + 8.95 − 20.0) both give an engagement of about **5.3 mm**. So: board gap ≈ socket + plug − 5.3 mm.
+
+| Socket | Plug | Predicted gap |
 |---|---|---|
-| 8.95 mm (Y913) | 21.30 mm | 20.0 mm (the series maximum) |
-| **7.95 mm (Y911 / Z02–Z03)** | 20.30 mm | **19.0 mm**, which matches the measured 19.2 mm |
+| 12.35 mm (Y915) | 7.95 / 8.95 | 15.0 / 16.0 mm, which doesn't match |
+| 16.35 mm (Y504) | 7.95 | 19.0 mm, which matches the measured 19.2 mm |
+| 16.35 mm (Y504) | 8.95 | 20.0 mm |
 
-So the SME main board almost certainly has the **7.95 mm IMSA-10120B-20 plug**, which is the part on drawing 110-410120-847.
-The +0.2 mm difference is within the connector's Z float (±0.7 mm) and measurement tolerance. The 1.3 mm engagement
-is inferred from the series' 20.0 mm maximum; confirm it against IRISO's socket drawing if possible.
+The measurements (19.2 mm gap, ~8.5 mm plug) imply a **~16 mm socket (Y504 type)**, not the 12.35 mm Y915. Either the
+daughter-board socket is the taller type, or BMW's plug is a custom tall part. **Still to do:** measure the socket
+height on the daughter board, and read the plug's `B**` side marking.
 
 Series data from IRISO's 10120 series sheet, the product pages and specification IS-10120-003:
 
