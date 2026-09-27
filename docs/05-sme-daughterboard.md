@@ -16,6 +16,7 @@ The BMW SME carries a daughter board with:
 | `HEF4021BT` | SOIC-16 | Nexperia HEF4021B parallel-in / serial-out shift register | High | Digital **inputs**, read by the BQ79616 SPI controller |
 | `46 PA1Q` (read as `PA10`), rear | HVSSOP-8 (DGN) | TI **TPS7A6650-Q1**, 5.0 V / 150 mA LDO, 4–40 V input, power-good output | High (TI marking lookup: PA1Q) | 5 V rail for the isolated domain, fed from header B10 |
 | `46K` / `2904B` (read as `29048`) / TI logo (×2, upper-left of BQ79616) | 8-pin TSSOP/VSSOP | TI **LM2904B** dual op-amp, 36 V, 1.2 MHz. If a Q, A or T follows the B, it's the automotive LM2904B-Q1 | High (TI marking lookup: 2904B) | Analog front end: buffering or scaling the shunt/HV signals into the BQ79616's VC/GPIO inputs (4 channels) |
+| `4030P` / `RXD` (×2) | SOT-223 | onsemi **NJT4030P** PNP, 40 V, 3 A (5 A peak) | High | **Pyro fuse high-side firing switch(es)** |
 | `BYG23M` | SMA | Vishay BYG23M, ~1 kV-class rectifier | Medium (check rating) | HV network |
 | `3303` | 1206 resistors | 330 kΩ | High | HV divider / insulation-measurement resistor strings |
 | ST logo, DPAK (several, some under grey silicone) | DPAK | ST, unidentified | — | Likely HV MOSFETs switching the measurement network |
@@ -263,8 +264,18 @@ open**.
 - The small **white 2-way connector** on the daughter board goes to the **pack's pyro fuse** (pyrotechnic disconnect).
 - **Correction:** one pyro pin goes to HEF4021B pins 7 (D0) and 8 (VSS), so it is simply the **isolated ground (A10)**,
   not a status input. HEF4021B D0 is an unused input tied to ground.
-- **The other pyro pin is still to trace.** It will be the drive or sense side (firing switch, energy capacitors, or a
-  continuity-sense resistor).
+- **The other pyro pin goes to two onsemi NJT4030P PNP transistors** (SOT-223, marking `4030P`, `RXD` = lot/date
+  code): 40 V, 3 A continuous / 5 A peak, low saturation voltage. That is a **high-side firing switch** for the pyro
+  igniter: emitter to an energy source, collector to the pyro pin, pyro return to A10. **This board can fire the pyro
+  fuse.**
+
+  NJT4030P SOT-223 pins: **1 = base, 2 and tab (4) = collector, 3 = emitter.**
+
+  | Question | How to check (unpowered) | Meaning |
+  |---|---|---|
+  | Series or parallel? | Is one transistor's emitter (3) connected to the other's collector (2/tab)? | Series = two independent switches must both close (redundant safety). Parallel = more current |
+  | Energy source | Where the emitter (3) goes: B10 directly, or the rear 3 × 820 µF capacitors | Capacitors = the firing energy is stored on the board |
+  | Who drives the bases | Base (1) → resistor → an NPN, MOSFET, 74HC595 output or BQ79616 GPIO | Tells us how firing is commanded (SPI via the BQ79616, or a separate isolated path from the SME) |
 
 **HEF4021B pinout** (SO16, Nexperia datasheet rev 12):
 
@@ -292,7 +303,7 @@ open**.
 | 10 (CP) | | Expect BQ79616 pin 55 (GPIO7) |
 | 11 (DS) | | |
 
-> ⚠ **Possible pyro firing circuit.** The rear of the board has three ~820 µF capacitors, a power magnetic, and ST DPAK
+> ⚠ **Pyro firing circuit, now very likely** (two NJT4030P high-side switches on the pyro pin). The rear of the board has three ~820 µF capacitors, a power magnetic, and ST DPAK
 > MOSFETs under silicone. Together with a 74HC595 output register and the pyro connector, that suggests the board may
 > not just monitor the pyro fuse but also **fire** it. Until the circuit is traced:
 > - Never connect a real pyro fuse or squib to this board on the bench.
@@ -433,7 +444,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | B7 = ISO7721 pin 6 (OUTB): host RX |
 | | A7 = ISO7721 pin 7 (INA): host TX |
 | | A6 = ISO7721 pin 5 (GND2): the header faces ISO7721 side 2 (pins 5–8) |
-| | White 2-way connector goes to the pyro fuse. One pin is isolated GND (via HEF4021B pins 7/8; D0 tied low); the other pin is still to trace |
+| | White 2-way connector goes to the pyro fuse. One pin is isolated GND (via HEF4021B pins 7/8; D0 tied low). The other pin goes to two onsemi NJT4030P PNP transistors: a high-side firing switch |
 | | Header identified as IRISO 10120 series (2.0 mm pitch Z-Move floating board-to-board, 125 V rating): a socket derived from **IMSA-10120S-20Y915** (12.35 mm tall). The mating plug IMSA-10120B-20 is on the SME main board |
 | | A2, B2, A9, B9 unpopulated: columns 2 and 9 are empty, so columns 1 and 10 are separated from the middle |
 | | A1 + B1 (left column) go through isolation transformers: this is the daisy-chain pair to the modules |

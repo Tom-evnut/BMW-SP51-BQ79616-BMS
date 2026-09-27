@@ -11,6 +11,7 @@ Always check ti.com for the latest revision.
 | [TPS7A66-Q1_SLVSBL0F.pdf](TPS7A66-Q1_SLVSBL0F.pdf) | TPS7A66-Q1 / TPS7A69-Q1, 40 V 150 mA low-Iq LDO (daughter board uses TPS7A6650-Q1, marking `PA1Q`) | SLVSBL0F (Dec 2017) | [ti.com](https://www.ti.com/product/TPS7A66-Q1) |
 | [INA240-Q1_SBOS808E.pdf](INA240-Q1_SBOS808E.pdf) | INA240-Q1, −4 V to 80 V bidirectional current-sense amplifier (daughter board: INA240A1-Q1, gain 20) | SBOS808E (Dec 2021) | [ti.com](https://www.ti.com/product/INA240-Q1) |
 | [HEF4021B_Nexperia_rev12.pdf](HEF4021B_Nexperia_rev12.pdf) | Nexperia HEF4021B, 8-bit static shift register, parallel-in / serial-out (daughter-board input expander). © Nexperia | Rev 12 (Aug 2024) | [nexperia.com](https://www.nexperia.com/product/HEF4021BT) |
+| [NJT4030P_onsemi_rev5.pdf](NJT4030P_onsemi_rev5.pdf) | onsemi NJT4030P PNP power transistor, 40 V, 3 A (daughter-board pyro high-side switch). © onsemi | Rev 5 (Nov 2013) | [onsemi.com](https://www.onsemi.com/products/discrete-power-modules/general-purpose-and-low-vcesat-transistors/njt4030p) |
 | [BQ79631-Q1_SLUSEC2A.pdf](BQ79631-Q1_SLUSEC2A.pdf) | BQ79631-Q1, pack monitor (voltage, current, insulation) | SLUSEC2A (Nov 2023) | [ti.com](https://www.ti.com/product/BQ79631-Q1) |
 
 To re-download the latest versions:
