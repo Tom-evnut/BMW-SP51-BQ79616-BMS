@@ -23,8 +23,8 @@ using the SimpBMS / Victron CAN protocol.
 
 ## Daughter-board header (summary)
 
-Connector: **IRISO IMSA-10120B** 20-way plug (2.0 mm pitch floating board-to-board, 125 V rating; mating socket
-IMSA-10120S). Viewed from the component side, header at the bottom edge. Columns 2 and 9 are unpopulated (creepage gap).
+Connector: **IRISO IMSA-10120S-20Y915** 20-way socket, or a BMW derivative of it (2.0 mm pitch floating
+board-to-board, 125 V rating). The mating plug is IMSA-10120B-20. Viewed from the component side, header at the bottom edge. Columns 2 and 9 are unpopulated (creepage gap).
 
 ```
    A1 │ ·  │ A3 A4 A5 [A6 GND] [A7 TX] [A8 VCC] │ ·  │ [A10 ISO-GND]

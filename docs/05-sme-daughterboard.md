@@ -111,7 +111,19 @@ The header is **20-way with 4 pins missing** (16 populated). Missing pins in a h
 
 ### Connector: IRISO 10120 series (Z-Move floating board-to-board)
 
-The header is an **IRISO IMSA-10120B** plug (20-way family). Series data from IRISO's 10120 series sheet and product pages:
+The daughter-board header is an **IRISO 10120S socket**, apparently a derivative of **IMSA-10120S-20Y915**, possibly a
+BMW-specific version with columns 2 and 9 unpopulated. The **mating plug (IMSA-10120B-20…) sits on the SME main
+board**, and on a replacement master or bench breakout.
+
+| IMSA-10120S-20Y915 | Value |
+|---|---|
+| Type | Socket (female), vertical top entry, SMT, 20 positions, 2.0 mm pitch |
+| Size | 26.5 × 5.5 mm footprint (as listed), **12.35 mm tall** |
+| Contacts | Gold, 0.1 µm min |
+| Rating | 125 V, 1 A, 50 mΩ max |
+| Mates with | IMSA-10120B-20… plug (e.g. Y911 / Z02–Z03: 7.95 mm tall; Y913: 8.95 mm tall) |
+
+Series data from IRISO's 10120 series sheet, the product pages and specification IS-10120-003:
 
 | Parameter | Value |
 |---|---|
@@ -128,7 +140,9 @@ The header is an **IRISO IMSA-10120B** plug (20-way family). Series data from IR
   or pin-1 mark; the only markings are the `IRS` logo, a `*` mark on one long side of the insulator and a `B**` lot
   code. **The A/B convention below is the project's official numbering.**
 
-#### IMSA-10120B-20Z02/Z03-GFN4 plug (drawing 110-410120-847 rev 5)
+#### Mating plug: IMSA-10120B-20Z02/Z03-GFN4 (drawing 110-410120-847 rev 5)
+
+This is the part the SME main board, a replacement master or a bench breakout needs in order to mate with the daughter board.
 
 | Item | Value |
 |---|---|
@@ -156,9 +170,9 @@ The header is an **IRISO IMSA-10120B** plug (20-way family). Series data from IR
 | Reflow | Peak 260 °C max; hand soldering 350 °C, 3 s |
 | Handling | Mate straight (≤ 1° mating angle, ≤ 3° guiding angle); don't hold the boards by the connector alone, fix them with screws near the connector |
 
-- The plug uses centre-strip contacts, so generic 2 mm female jumper leads won't mate reliably. For bench work,
-  use a matching **IMSA-10120S-20…** socket on a small breakout board.
-- To pick the right socket for a replacement master, measure the stack height between the SME main board and the
+- The socket is designed for the plug's centre-strip contacts, so generic 2 mm pins or jumper leads won't mate
+  reliably. For bench work, use a matching **IMSA-10120B-20…** plug on a small breakout board.
+- To pick the right plug variant (7.95 or 8.95 mm) for a replacement master, measure the stack height between the SME main board and the
   daughter board.
 
 ### Pin numbering convention
@@ -344,7 +358,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | B7 = ISO7721 pin 6 (OUTB): host RX |
 | | A7 = ISO7721 pin 7 (INA): host TX |
 | | A6 = ISO7721 pin 5 (GND2): the header faces ISO7721 side 2 (pins 5–8) |
-| | Header identified as IRISO IMSA-10120B (10120 series, 2.0 mm pitch Z-Move floating board-to-board plug, 125 V rating); the mating socket is IMSA-10120S |
+| | Header identified as IRISO 10120 series (2.0 mm pitch Z-Move floating board-to-board, 125 V rating): a socket derived from **IMSA-10120S-20Y915** (12.35 mm tall). The mating plug IMSA-10120B-20 is on the SME main board |
 | | A2, B2, A9, B9 unpopulated: columns 2 and 9 are empty, so columns 1 and 10 are separated from the middle |
 | | A1 + B1 (left column) go through isolation transformers: this is the daisy-chain pair to the modules |
 | | Photos: INA240A1-Q1 ×2, 74HC595, HEF4021B and a HV network (BYG23M, 330 kΩ strings, ST DPAKs) point to a pack-monitor function |
