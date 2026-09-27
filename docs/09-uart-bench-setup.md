@@ -61,6 +61,25 @@ Rough current budget on B10:
 
 A successful WAKE should raise the supply current by about 12 mA, as the BQ79616 goes from SHUTDOWN to ACTIVE.
 
+## Bench incident: 5 V rail short
+
+- **Symptom:** during tracing of the rear capacitor bank (board powered at 13 V), the supply current suddenly rose
+  above 200 mA and the supply collapsed to ~2.5 V in current limit.
+- **Findings:**
+  - Unpowered, B10–A10 still reads 1.2 kΩ (diode mode: 0.665 V forward, 0.53 V reverse).
+  - Ramp test: no current up to ~2.5 V; at 3 V it hits the current limit (0.16 A). This is where the TPS7A6650 starts
+    regulating into its output.
+  - **5 V rail (ISO7721 pin 1) to A10 = 0.7 Ω: the 5 V rail is shorted.**
+- **Most likely cause:** a probe slip bridging B10 (13 V) to the 5 V rail while powered, killing a 6–7 V-rated part
+  (INA240, ISO7721, 74HC595), or a cracked MLCC on the rail.
+- **Localising:** inject ~0.3–0.5 A at < 0.5 V into the 5 V rail (ISO7721 pin 1 +, A10 −); find the warm part, or
+  compare mV at each supply pin. Candidates: rail MLCCs, TPS7A6650 VOUT, ISO7721 VCC1, INA240 VS ×2, HEF4021B VDD,
+  74HC595 VCC, BQ79616 VC3/5/6/7/11/14.
+- **Status:** investigating.
+
+> **Bench rule from this incident:** only probe the daughter board **unpowered**, or with **fixed clip-on probes**
+> attached before power is applied. Never probe fine-pitch parts on a live board.
+
 ## UART
 
 - 1 Mbaud, 8N1, idle high, half duplex. Send a command and wait for the full response before sending the next.
