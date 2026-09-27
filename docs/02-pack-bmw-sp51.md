@@ -40,5 +40,6 @@ SME MCU ─UART─ ISO7721 ─ BQ79616 (base, addr 0) ══► Module 1 (addr 1
 - [x] Chain isolation at the base device: **transformer** (daughter board, header pins A1 + B1)
 - [ ] Chain isolation on the module CSC boards, and linear vs ring
 - [ ] Cell chemistry and capacity.
-- [ ] What the base BQ79616's VC/CB/GPIO pins on the daughter board connect to (a pure bridge, or measuring something?).
-- [ ] How the daughter board's BQ79616 is powered (BAT, pin 1), and what its ground is referenced to.
+- [x] What the base BQ79616's VC/CB/GPIO pins connect to: **measuring**. VC1/VC2 = INA240 current outputs, CB0–CB8 and VC0 = GND, VC11/VC14 = 5 V; the rest is being traced (docs/05)
+- [x] How the daughter board's BQ79616 is powered: BAT from header B10 (isolated 9–40 V supply) through ~30 Ω; ground = A10, the isolated domain (probably HV− in the car)
+- [ ] Pyro fuse: the daughter board drives it (2 × NJT4030P high side). Energy-reserve source and firing command still to trace
