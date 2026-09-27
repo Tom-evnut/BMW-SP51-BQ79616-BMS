@@ -336,12 +336,20 @@ Pinout (14-pin D/PW, datasheet SLCS006Z):
   design: the reserve keeps the detection and firing circuit alive for a while even if the B10 supply is lost, for
   example in a crash. Stored energy: ½ × 2.46 mF × (13 V)² ≈ 0.2 J at 13 V, **enough to fire an igniter**.
 
+**Measured: with 12 V on B10, the capacitor bank sits at 0 V.** The reserve is **not charged from B10**. Candidate sources:
+
+| Hypothesis | Evidence for | How to check (unpowered) |
+|---|---|---|
+| **A. Charged from the HV pack** through an HV pre-regulator | ST DPAK MOSFETs, BYG23M ~1 kV diodes and 330 kΩ strings are exactly the parts for a linear/HV supply, which would let the pyro fire even with 12 V lost | Beep capacitor + to the DPAK pins and the BYG23M diodes; follow the 330 kΩ strings to the board's other connection points (top-section through-holes) |
+| **B. Charged through the rear power magnetic** (isolated converter driven from the SME side) | 6-pin power magnetic on the rear next to the capacitors; the middle header pins A3–A5, B3–B6, B8 are still unmapped | Beep capacitor + through a rectifier diode to the magnetic, and the magnetic's other winding to the middle header pins |
+| **C. Charged only when "armed"** by a switch from B10 | Safety-oriented design; the 74HC595 outputs could enable charging | Diode mode between B10 and capacitor +; look for a MOSFET or PNP between them |
+
 The outputs are **open-collector**, so each needs a pull-up; the pull-up rail shows the logic domain. To trace:
 
 | Check | Why |
 |---|---|
 | ~~VCC (3)~~ | Confirmed: from the rear capacitor bank (energy reserve) |
-| Capacitor-bank voltage (powered, battery DMM vs A10) | ≈ B10 − diode drop = diode-fed reserve; higher than B10 = boost converter (the rear power magnetic) |
+| ~~Capacitor-bank voltage with B10 = 12 V~~ | **Measured 0 V**: not charged from B10 (see hypotheses A–C above) |
 | Charge path B10 → capacitors | Diode/resistor, or through the power magnetic |
 | NJT4030P emitters (pin 3) → capacitor bank? | Whether the reserve is also the firing energy |
 | Capacitor voltage decay after power-off | How long the reserve holds up, and how long to wait before handling |
@@ -481,6 +489,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | B7 = ISO7721 pin 6 (OUTB): host RX |
 | | A7 = ISO7721 pin 7 (INA): host TX |
 | | A6 = ISO7721 pin 5 (GND2): the header faces ISO7721 side 2 (pins 5–8) |
+| | With B10 = 12 V the rear capacitor bank is at 0 V: the reserve is charged from another source (HV, the power magnetic, or an armed switch) |
 | | Rear analogue circuitry: **two** TI LM2901AV quad comparators. GND = A10; VCC fed from the 3 × ~820 µF rear capacitor bank (an energy-reserve rail) |
 | | White 2-way connector goes to the pyro fuse. One pin is isolated GND (via HEF4021B pins 7/8; D0 tied low). The other pin goes to two onsemi NJT4030P PNP transistors: a high-side firing switch |
 | | Header identified as IRISO 10120 series (2.0 mm pitch Z-Move floating board-to-board, 125 V rating): a socket derived from **IMSA-10120S-20Y915** (12.35 mm tall). The mating plug IMSA-10120B-20 is on the SME main board |
