@@ -23,8 +23,8 @@ using the SimpBMS / Victron CAN protocol.
 
 ## Daughter-board header (summary)
 
-Viewed from the component side, header at the bottom edge. Row A = surface-mount row, row B = through-hole row.
-Columns 2 and 9 are unpopulated.
+Connector: **IRISO IMSA-10120B** 20-way plug (2.0 mm pitch floating board-to-board, 125 V rating; mating socket
+IMSA-10120S). Viewed from the component side, header at the bottom edge. Columns 2 and 9 are unpopulated (creepage gap).
 
 ```
    A1 │ ·  │ A3 A4 A5 [A6 GND] [A7 TX] [A8 VCC] │ ·  │ [A10 ISO-GND]

@@ -108,6 +108,28 @@ The header is **20-way with 4 pins missing** (16 populated). Missing pins in a h
 - **BQ side (treat as HV until proven otherwise):** daisy-chain COMH/COML pairs (the chain connector may sit on the
   SME main board), BQ79616 BAT supply, and possibly bus-bar or voltage sense.
 
+### Connector: IRISO 10120 series (Z-Move floating board-to-board)
+
+The header is an **IRISO IMSA-10120B** plug (20-way family). Series data from IRISO's 10120 series sheet and product pages:
+
+| Parameter | Value |
+|---|---|
+| Type | Floating ("Z-Move") board-to-board stacking connector, straight, SMT |
+| Pitch / rows | 2.00 mm, 2 rows (20-way = 2 × 10) |
+| Parts | **IMSA-10120B-…** = plug (male, centre-strip contacts). **IMSA-10120S-…** = socket (female) |
+| Rating | 1 A per contact, 125 V AC/DC, 500 V AC withstand, −40 to +125 °C |
+| Floating range | X/Y ±0.65 mm, Z ±0.8 mm |
+| Mated height | 11.0–20.0 mm, depending on the plug/socket variant pair (plugs Z02–Z05, sockets Z10/Z11 or Z18/Z19; odd numbers = without locating boss) |
+
+- The **125 V rating** is well below the pack voltage. This supports the empty columns 2 and 9 being a **creepage gap**
+  between the host domain and the isolated domain, which is HV-referenced in the car.
+- The official pin numbering is on IRISO's drawing (login required). Until it's confirmed, keep using the A/B
+  convention below.
+- The plug uses centre-strip contacts, so generic 2 mm female jumper leads won't mate reliably. For bench work,
+  use a matching **IMSA-10120S-20…** socket on a small breakout board.
+- To pick the right socket for a replacement master, measure the stack height between the SME main board and the
+  daughter board.
+
 ### Pin numbering convention
 
 Use this until the connector's own pin-1 marking or part number is known. View the **component side** with the header
@@ -291,6 +313,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | B7 = ISO7721 pin 6 (OUTB): host RX |
 | | A7 = ISO7721 pin 7 (INA): host TX |
 | | A6 = ISO7721 pin 5 (GND2): the header faces ISO7721 side 2 (pins 5–8) |
+| | Header identified as IRISO IMSA-10120B (10120 series, 2.0 mm pitch Z-Move floating board-to-board plug, 125 V rating); the mating socket is IMSA-10120S |
 | | A2, B2, A9, B9 unpopulated: columns 2 and 9 are empty, so columns 1 and 10 are separated from the middle |
 | | A1 + B1 (left column) go through isolation transformers: this is the daisy-chain pair to the modules |
 | | Photos: INA240A1-Q1 ×2, 74HC595, HEF4021B and a HV network (BYG23M, 330 kΩ strings, ST DPAKs) point to a pack-monitor function |

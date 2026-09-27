@@ -37,6 +37,20 @@ An STM32H5 is the alternative if more headroom or security features are wanted.
 
 **Plan:** make the driver support both. Prototype with option A, ideally by plugging BMW's own daughter board into a Nucleo.
 
+## Connector to the BMW daughter board (if reused)
+
+- The daughter board carries an **IRISO IMSA-10120B** 20-way plug (2.0 mm pitch, floating Z-Move board-to-board).
+  The master needs the mating **IMSA-10120S-20…** socket.
+- Match the original mated height (11–20 mm range, set by the plug/socket variant pair). Measure it on the SME.
+- Keep columns 2 and 9 unused. They provide the creepage gap between the host and isolated domains, since the
+  connector itself is only rated 125 V.
+- The master must provide:
+  - Host logic supply on A8 (2.25–5.5 V), with GND on A6.
+  - UART on A7 (TX) and B7 (RX).
+  - An isolated 9–40 V supply on B10/A10 (~12 V, ~100 mA peak). This needs a small isolated DC-DC with isolation
+    rated for the pack voltage.
+  - Chain transformer pair on A1/B1, routed to the module harness.
+
 ## Pack measurement
 
 | Option | Parts | Notes |
