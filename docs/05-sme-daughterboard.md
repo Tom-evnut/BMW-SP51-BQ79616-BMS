@@ -118,11 +118,11 @@ board**, and on a replacement master or bench breakout.
 | IMSA-10120S-20Y915 | Value |
 |---|---|
 | Type | Socket (female), vertical top entry, SMT, 20 positions, 2.0 mm pitch |
-| Size | 26.5 × 5.5 mm footprint (as listed), **12.35 mm tall** |
+| Size | 26.5 × 5.5 mm footprint (as listed), 12.35 mm tall (**the fitted socket measures 16.3 mm, so it's the Y504 type; see below**) |
 | Contacts | Gold, 0.1 µm min |
 | Rating | 125 V, 1 A, 50 mΩ max |
 | Mates with | IMSA-10120B-20… plug (e.g. Y911 / Z02–Z03: 7.95 mm tall; Y913: 8.95 mm tall) |
-| **Measured on the SME** | **Boards ~19.2 mm apart when mated; SME plug ~8.5 mm tall** |
+| **Measured on the SME** | **Boards ~19.2 mm apart when mated; SME plug ~8.5 mm tall; daughter-board socket 16.3 mm tall** |
 
 **Connector stack analysis.** Heights from IRISO listings:
 
@@ -140,9 +140,18 @@ The series' mated-height range is 11.0–20.0 mm. The shortest pair (8.35 + 7.95
 | 16.35 mm (Y504) | 7.95 | 19.0 mm, which matches the measured 19.2 mm |
 | 16.35 mm (Y504) | 8.95 | 20.0 mm |
 
-The measurements (19.2 mm gap, ~8.5 mm plug) imply a **~16 mm socket (Y504 type)**, not the 12.35 mm Y915. Either the
-daughter-board socket is the taller type, or BMW's plug is a custom tall part. **Still to do:** measure the socket
-height on the daughter board, and read the plug's `B**` side marking.
+**Result:** the daughter-board socket measures **16.3 mm**, so it's the **Y504 type (IMSA-10120S-20Y504, 16.35 mm)**, or a
+BMW derivative of it with columns 2 and 9 unpopulated. It is not the 12.35 mm Y915.
+
+With the 16.35 mm socket and the Z float of ±0.7 mm:
+
+| SME plug | Nominal gap | Range with Z float | Fits the measured 19.2 mm? |
+|---|---|---|---|
+| **7.95 mm (IMSA-10120B-20Y911 / -20Z02-GFN4)** | 19.0 mm | 18.3–19.7 mm | **Yes** |
+| 8.95 mm (IMSA-10120B-20Y913) | 20.0 mm | 19.3–20.7 mm | Just outside |
+
+The gap favours the **7.95 mm plug**. The direct plug measurement (~8.5 mm) is ambiguous. Reading the plug's `B**` side
+marking would confirm it.
 
 Series data from IRISO's 10120 series sheet, the product pages and specification IS-10120-003:
 

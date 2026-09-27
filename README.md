@@ -23,8 +23,8 @@ using the SimpBMS / Victron CAN protocol.
 
 ## Daughter-board header (summary)
 
-Connector: **IRISO 10120S** 20-way socket (looks like IMSA-10120S-20Y915, but the measured stack suggests the taller Y504
-type; see docs/05), 2.0 mm pitch floating board-to-board, 125 V rating. The mating plug is IMSA-10120B-20. Viewed from the component side, header at the bottom edge. Columns 2 and 9 are unpopulated (creepage gap).
+Connector: **IRISO 10120S** 20-way socket, **16.3 mm tall = IMSA-10120S-20Y504 type** (2.0 mm pitch floating board-to-board,
+125 V rating). The mating plug on the SME is most likely the 7.95 mm IMSA-10120B-20Y911 (19.0 mm board spacing; see docs/05). Viewed from the component side, header at the bottom edge. Columns 2 and 9 are unpopulated (creepage gap).
 
 ```
    A1 │ ·  │ A3 A4 A5 [A6 GND] [A7 TX] [A8 VCC] │ ·  │ [A10 ISO-GND]
