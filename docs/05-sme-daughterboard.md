@@ -16,6 +16,7 @@ The BMW SME carries a daughter board with:
 | `HEF4021BT` | SOIC-16 | Nexperia HEF4021B parallel-in / serial-out shift register | High | Digital **inputs**, read by the BQ79616 SPI controller |
 | `46 PA1Q` (read as `PA10`), rear | HVSSOP-8 (DGN) | TI **TPS7A6650-Q1**, 5.0 V / 150 mA LDO, 4–40 V input, power-good output | High (TI marking lookup: PA1Q) | 5 V rail for the isolated domain, fed from header B10 |
 | `46K` / `2904B` (read as `29048`) / TI logo (×2, upper-left of BQ79616) | 8-pin TSSOP/VSSOP | TI **LM2904B** dual op-amp, 36 V, 1.2 MHz. If a Q, A or T follows the B, it's the automotive LM2904B-Q1 | High (TI marking lookup: 2904B) | Analog front end: buffering or scaling the shunt/HV signals into the BQ79616's VC/GPIO inputs (4 channels) |
+| `2901AV` (rear) | 14-pin SOIC/TSSOP | TI **LM2901AV** quad differential comparator: open-collector outputs, 2–32 V supply (V suffix), A = precision offset. Automotive LM2901AV-Q1 exists | High (TI marking lookup: 2901AV = LM2901AVQ) | Rear analogue circuitry: hardware threshold detection (pyro, HV or insulation?); outputs may feed HEF4021B inputs |
 | `4030P` / `RXD` (×2) | SOT-223 | onsemi **NJT4030P** PNP, 40 V, 3 A (5 A peak) | High | **Pyro fuse high-side firing switch(es)** |
 | `BYG23M` | SMA | Vishay BYG23M, ~1 kV-class rectifier | Medium (check rating) | HV network |
 | `3303` | 1206 resistors | 330 kΩ | High | HV divider / insulation-measurement resistor strings |
@@ -311,6 +312,28 @@ open**.
 >   `bq_uart.py` currently doesn't touch them.
 > - The extra ~40 mA idle current on B10 could be a converter charging those capacitors.
 
+### LM2901AV quad comparator (rear of the board)
+
+Pinout (14-pin D/PW, datasheet SLCS006Z):
+
+| Pin | Name | Pin | Name |
+|---|---|---|---|
+| 1 | 1OUT | 14 | 3OUT |
+| 2 | 2OUT | 13 | 4OUT |
+| 3 | VCC | 12 | GND |
+| 4 | 2IN− | 11 | 4IN+ |
+| 5 | 2IN+ | 10 | 4IN− |
+| 6 | 1IN− | 9 | 3IN+ |
+| 7 | 1IN+ | 8 | 3IN− |
+
+The outputs are **open-collector**, so each needs a pull-up; the pull-up rail shows the logic domain. To trace:
+
+| Check | Why |
+|---|---|
+| VCC (3): 5 V rail or B10? | Supply domain |
+| Each OUT (1, 2, 13, 14) → HEF4021B D1–D7, BQ79616 GPIO, NJT4030P base driver, or a MOSFET gate? | Status bits read over SPI, or direct hardware action (for example a firing or HV-switch interlock) |
+| Each IN+/IN− pair → INA240 output, HV divider or 330 kΩ string, pyro line, or a reference divider? | What is being thresholded |
+
 ### INA240A1-Q1 current-sense amplifiers (×2)
 
 SOIC-8 pinout (datasheet SBOS808E):
@@ -444,6 +467,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | B7 = ISO7721 pin 6 (OUTB): host RX |
 | | A7 = ISO7721 pin 7 (INA): host TX |
 | | A6 = ISO7721 pin 5 (GND2): the header faces ISO7721 side 2 (pins 5–8) |
+| | Rear analogue circuitry uses a TI LM2901AV quad comparator (marking `2901AV`) |
 | | White 2-way connector goes to the pyro fuse. One pin is isolated GND (via HEF4021B pins 7/8; D0 tied low). The other pin goes to two onsemi NJT4030P PNP transistors: a high-side firing switch |
 | | Header identified as IRISO 10120 series (2.0 mm pitch Z-Move floating board-to-board, 125 V rating): a socket derived from **IMSA-10120S-20Y915** (12.35 mm tall). The mating plug IMSA-10120B-20 is on the SME main board |
 | | A2, B2, A9, B9 unpopulated: columns 2 and 9 are empty, so columns 1 and 10 are separated from the middle |
