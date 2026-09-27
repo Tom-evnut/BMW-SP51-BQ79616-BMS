@@ -261,8 +261,10 @@ open**.
 ### Pyro fuse connector and HEF4021B inputs
 
 - The small **white 2-way connector** on the daughter board goes to the **pack's pyro fuse** (pyrotechnic disconnect).
-- One of its pins connects to the **HEF4021B**, which is probably a pyro status or continuity input read through the
-  BQ79616 SPI controller.
+- **Correction:** one pyro pin goes to HEF4021B pins 7 (D0) and 8 (VSS), so it is simply the **isolated ground (A10)**,
+  not a status input. HEF4021B D0 is an unused input tied to ground.
+- **The other pyro pin is still to trace.** It will be the drive or sense side (firing switch, energy capacitors, or a
+  continuity-sense resistor).
 
 **HEF4021B pinout** (SO16, Nexperia datasheet rev 12):
 
@@ -284,7 +286,7 @@ open**.
 
 | HEF4021B pin | Connects to | Notes |
 |---|---|---|
-| Pyro connector pin → D? | | Pin number to confirm |
+| 7 (D0), 8 (VSS) | GND (A10) and one pyro-connector pin | D0 unused, tied low (confirmed) |
 | 3 (Q7) | | Expect BQ79616 pin 57 (GPIO5) |
 | 9 (PL) | | Expect BQ79616 pin 58 (GPIO4) |
 | 10 (CP) | | Expect BQ79616 pin 55 (GPIO7) |
@@ -431,7 +433,7 @@ Domain: **LV** = host side, **BQ** = BQ79616 / isolated side, **—** = pin miss
 | | B7 = ISO7721 pin 6 (OUTB): host RX |
 | | A7 = ISO7721 pin 7 (INA): host TX |
 | | A6 = ISO7721 pin 5 (GND2): the header faces ISO7721 side 2 (pins 5–8) |
-| | White 2-way connector goes to the pyro fuse; one pin connects to the HEF4021B (a D input, pin to confirm) |
+| | White 2-way connector goes to the pyro fuse. One pin is isolated GND (via HEF4021B pins 7/8; D0 tied low); the other pin is still to trace |
 | | Header identified as IRISO 10120 series (2.0 mm pitch Z-Move floating board-to-board, 125 V rating): a socket derived from **IMSA-10120S-20Y915** (12.35 mm tall). The mating plug IMSA-10120B-20 is on the SME main board |
 | | A2, B2, A9, B9 unpopulated: columns 2 and 9 are empty, so columns 1 and 10 are separated from the middle |
 | | A1 + B1 (left column) go through isolation transformers: this is the daisy-chain pair to the modules |
